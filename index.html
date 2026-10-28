@@ -1,0 +1,1957 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f7f5" />
+  <title>Gandhi &amp; Bros Co. — India Market Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f7f5;
+      --surface: #ffffff;
+      --surface-soft: #f8faf9;
+      --ink: #172321;
+      --muted: #77847f;
+      --line: #e8eeea;
+      --line-strong: #dce6e0;
+      --green: #11845b;
+      --green-strong: #087447;
+      --green-soft: #eaf6ef;
+      --red: #d94c50;
+      --red-soft: #fff0ef;
+      --amber: #b97818;
+      --navy: #132a33;
+      --shadow: 0 14px 42px rgba(32, 59, 47, .065);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 94% 0%, rgba(202, 233, 210, .24), transparent 26rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(17, 132, 91, .24);
+      outline-offset: 2px;
+    }
+    .app-shell { width: min(1600px, 100%); margin: 0 auto; padding: 0 28px 26px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid rgba(215, 226, 219, .8);
+      background: rgba(244, 247, 245, .94);
+      backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-mark {
+      position: relative;
+      width: 38px; height: 38px; border-radius: 12px;
+      display: grid; place-items: center; overflow: hidden;
+      background: var(--navy); color: #fff;
+      box-shadow: 0 6px 13px rgba(19, 42, 51, .16);
+    }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .brand-mark::after { content: ""; position: absolute; width: 22px; height: 5px; right: -8px; bottom: 4px; background: #b2e773; transform: rotate(-45deg); border-radius: 99px; }
+    .brand-name { font-size: 14px; font-weight: 850; line-height: 1.1; letter-spacing: .045em; white-space: nowrap; }
+    .brand-sub { display: block; margin-top: 5px; color: #7f8b86; font-size: 9px; font-weight: 750; letter-spacing: .16em; }
+    .header-right { display: flex; min-width: 0; align-items: center; gap: 12px; }
+    .page-nav { display: flex; min-width: 0; align-items: center; gap: 3px; padding: 4px; overflow-x: auto; border: 1px solid #e4ece7; border-radius: 12px; background: rgba(255,255,255,.78); scrollbar-width: none; }
+    .page-nav::-webkit-scrollbar { display: none; }
+    .page-nav-link { display: inline-flex; min-height: 33px; flex: 0 0 auto; align-items: center; justify-content: center; padding: 0 11px; border-radius: 8px; color: #66776e; font-size: 10px; font-weight: 790; text-decoration: none; white-space: nowrap; transition: background .15s ease, color .15s ease; }
+    .page-nav-link:hover { background: #edf5ef; color: #14794f; }
+    .page-nav-link.active { background: #167b52; color: #fff; box-shadow: 0 2px 6px rgba(22,123,82,.16); }
+    .app-page[hidden] { display: none !important; }
+    .route-page-heading { padding: 14px 0 9px; }
+    .route-page-heading .eyebrow { margin-bottom: 4px; }
+    .route-page-heading h1 { font-size: clamp(26px, 3vw, 34px); }
+    .page-heading-copy { min-width: 0; }
+    .live-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border: 1px solid #d9eadf; border-radius: 999px;
+      background: rgba(255,255,255,.74); color: #3b6651;
+      font-size: 10px; font-weight: 800; letter-spacing: .075em; white-space: nowrap;
+    }
+    .pulse-dot, .status-light { width: 7px; height: 7px; flex: 0 0 7px; background: #29a76c; border-radius: 50%; box-shadow: 0 0 0 4px rgba(41, 167, 108, .11); }
+    .pulse-dot { animation: pulse 1.8s infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(41,167,108,0); } }
+
+    .page-heading {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+      padding: 20px 0 15px;
+    }
+    .news-hero { min-width: 0; flex: 1 1 auto; }
+    .news-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .news-heading-copy { min-width: 0; }
+    .news-source-link { display: inline-flex; align-items: center; color: #167b52; font-size: 9px; font-weight: 800; letter-spacing: .035em; text-decoration: none; white-space: nowrap; }
+    .news-source-link:hover { color: #0f6944; text-decoration: underline; }
+    .news-section-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 10px; }
+    .moneycontrol-news-card { min-width: 0; padding: 12px 13px 10px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: 0 4px 16px rgba(40,68,53,.035); }
+    .moneycontrol-section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; padding-bottom: 9px; border-bottom: 1px solid #eaf0ec; }
+    .moneycontrol-section-index { display: inline-grid; width: 23px; height: 23px; flex: 0 0 23px; place-items: center; border-radius: 7px; background: #eaf6ef; color: #18764f; font-size: 9px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .moneycontrol-section-head h2 { flex: 1; margin: 0; color: #24372d; font-size: 15px; font-weight: 760; letter-spacing: -.02em; }
+    .moneycontrol-section-link { color: #688274; font-size: 8px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+    .moneycontrol-section-link:hover { color: #14794f; text-decoration: underline; }
+    .moneycontrol-news-list { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; list-style: none; }
+    .moneycontrol-news-item { display: flex; min-width: 0; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid #eef2ef; }
+    .moneycontrol-news-rank { display: inline-grid; width: 18px; height: 18px; flex: 0 0 18px; place-items: center; border-radius: 6px; background: #f2f7f3; color: #62806e; font-size: 9px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .moneycontrol-news-copy { min-width: 0; }
+    .moneycontrol-news-link { display: -webkit-box; overflow: hidden; color: #2c3c34; font-size: 12px; font-weight: 670; line-height: 1.32; text-decoration: none; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .moneycontrol-news-link:hover { color: #14794f; text-decoration: underline; }
+    .news-loading { display: block; padding: 14px 0; color: #87948d; font-size: 11px; line-height: 1.4; }
+    .moneycontrol-section-state { margin-top: 7px; color: #89968f; font-size: 8px; font-weight: 650; line-height: 1.35; }
+    .moneycontrol-section-state.stale, .news-attribution.stale { color: #9a6b21; }
+    .news-attribution { margin-top: 7px; color: #89968f; font-size: 9px; line-height: 1.4; }
+    .eyebrow {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 9px; color: var(--green); font-size: 10px; font-weight: 850; letter-spacing: .15em;
+    }
+    .eyebrow .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #1b9c6b; }
+    h1 { margin: 0; color: #172622; font-size: clamp(28px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -.045em; font-weight: 790; }
+    h1 span { color: #6c8e7b; font-weight: 520; }
+    .page-subtitle { margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .heading-meta { display: flex; align-items: center; gap: 12px; padding-bottom: 3px; }
+    .market-status {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px;
+      background: #e9f6ee; border: 1px solid #d5ebdd; border-radius: 999px;
+      color: #1b764e; font-size: 10px; font-weight: 850; letter-spacing: .075em; white-space: nowrap;
+    }
+    .market-status.closed { background: #f1f3f2; border-color: #e2e7e4; color: #68746f; }
+    .market-status.unknown { background: #fff7e9; border-color: #f4e3bf; color: #94631d; }
+    .market-status.closed .status-light { background: #919b96; box-shadow: none; }
+    .market-status.unknown .status-light { background: #d79a34; box-shadow: none; }
+    .clock-box { min-width: 108px; padding-left: 13px; border-left: 1px solid var(--line-strong); }
+    .clock-box small { display: block; color: #99a49f; font-size: 8px; font-weight: 800; letter-spacing: .11em; }
+    .clock-box strong { display: block; margin-top: 4px; font-size: 13px; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+
+    .quote-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; margin-bottom: 11px; }
+    .quote-card {
+      position: relative; min-height: 122px; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 14px 17px 12px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: 0 5px 20px rgba(40, 68, 53, .025);
+    }
+    .quote-card::after { content: ""; position: absolute; width: 110px; height: 110px; right: -62px; top: -66px; border: 1px solid rgba(32, 139, 92, .11); border-radius: 50%; box-shadow: 0 0 0 14px rgba(32,139,92,.025), 0 0 0 29px rgba(32,139,92,.02); pointer-events: none; }
+    .quote-card:nth-child(2)::after { border-color: rgba(54, 106, 164, .11); box-shadow: 0 0 0 14px rgba(54,106,164,.025), 0 0 0 29px rgba(54,106,164,.02); }
+    .quote-card:nth-child(3)::after { border-color: rgba(171, 125, 53, .13); box-shadow: 0 0 0 14px rgba(171,125,53,.025), 0 0 0 29px rgba(171,125,53,.02); }
+    .quote-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .quote-title { color: #5a6a63; font-size: 10px; font-weight: 850; letter-spacing: .1em; }
+    .quote-exchange { margin-top: 5px; color: #a1aca6; font-size: 9px; font-weight: 700; letter-spacing: .06em; }
+    .quote-mini-icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 9px; background: #eef7f1; color: #378c64; }
+    .quote-card:nth-child(2) .quote-mini-icon { background: #eef3f9; color: #497cab; }
+    .quote-card:nth-child(3) .quote-mini-icon { background: #faf4e9; color: #b08234; }
+    .quote-card[data-benchmark="india-gold"] .quote-mini-icon { background: #faf4e9; color: #a8781e; }
+    .quote-card[data-benchmark="india-silver"] .quote-mini-icon { background: #f0f3f4; color: #71828b; }
+    .quote-card[data-benchmark="gift-nifty"] .quote-mini-icon { background: #eef3f9; color: #497cab; }
+    .quote-card[data-benchmark="bitcoin"] .quote-mini-icon { background: #fff3e6; color: #c87519; }
+    .quote-mini-icon svg { width: 15px; height: 15px; }
+    .quote-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 7px; }
+    .quote-value { color: #1b2a24; font-size: clamp(21px, 2.2vw, 27px); font-weight: 790; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+    .quote-change { font-size: 11px; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .quote-bottom { display: flex; align-items: center; gap: 9px; margin-top: 8px; color: #8c9992; font-size: 9px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .quote-bottom b { color: #53635a; font-weight: 750; }
+    .quote-range { position: relative; width: 54px; height: 3px; overflow: visible; border-radius: 9px; background: #e8eee9; }
+    .quote-range-fill { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, #d6ecd9, #43a878); }
+    .quote-range-marker { position: absolute; top: 50%; width: 7px; height: 7px; border: 2px solid white; border-radius: 50%; background: #14794f; transform: translate(-50%, -50%); box-shadow: 0 1px 4px rgba(0,0,0,.16); }
+    .quote-range-label { margin-left: auto; color: #9ca7a1; font-size: 8px; letter-spacing: .06em; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .neutral { color: #75837b; }
+
+    .index-chart-panel { margin: 0 0 11px; padding: 9px 12px 5px; border: 1px solid #e3ece6; border-radius: 13px; background: linear-gradient(110deg, #fff, #f7fbf8); box-shadow: 0 3px 12px rgba(40,68,53,.025); }
+    .index-chart-head, .index-chart-identity, .index-chart-controls { display: flex; align-items: center; }
+    .index-chart-head { justify-content: space-between; gap: 12px; }
+    .index-chart-identity { min-width: 0; gap: 9px; }
+    .index-chart-icon { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 9px; background: #eaf6ef; color: #14794f; }
+    .index-chart-icon svg { width: 17px; height: 17px; }
+    .index-chart-copy { min-width: 0; }
+    .index-chart-kicker { color: #789283; font-size: 8px; font-weight: 850; letter-spacing: .1em; }
+    .index-chart-current { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; margin-top: 2px; }
+    .index-chart-name { max-width: 240px; overflow: hidden; color: #31443a; font-size: 10px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+    .index-chart-value { color: #1b2a24; font-size: 14px; font-weight: 790; font-variant-numeric: tabular-nums; }
+    .index-chart-change { font-size: 9px; font-weight: 760; }
+    .index-chart-controls { flex: 0 0 auto; gap: 7px; }
+    .index-chart-select { min-width: 180px; max-width: 260px; height: 30px; }
+    .index-chart-open { height: 30px; padding: 0 9px; color: #fff; border: 1px solid #167b52; background: #167b52; font-size: 9px; text-decoration: none; }
+    .index-chart-open:hover { color: #fff; background: #0f6944; }
+    .index-trend-chart { display: block; width: 100%; height: 94px; margin-top: 2px; overflow: visible; }
+    .index-chart-foot { display: flex; justify-content: space-between; gap: 10px; margin: 0; color: #89968f; font-size: 8px; line-height: 1.35; }
+    .market-card { overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px 12px; }
+    .panel-label { margin-bottom: 5px; color: #93a099; font-size: 9px; font-weight: 850; letter-spacing: .14em; }
+    .panel-title-row { display: flex; align-items: center; gap: 10px; }
+    h2 { margin: 0; color: #1a2823; font-size: 18px; letter-spacing: -.025em; font-weight: 760; }
+    .count-pill { display: inline-flex; min-width: 23px; height: 21px; align-items: center; justify-content: center; padding: 0 6px; border: 1px solid #e6ece8; border-radius: 7px; color: #718078; background: #fafcfb; font-size: 10px; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .source-statuses { display: flex; align-items: center; gap: 7px; }
+    .source-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; background: #f2f7f3; color: #557563; font-size: 8px; font-weight: 850; letter-spacing: .08em; white-space: nowrap; }
+    .source-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #2a9b6b; }
+    .source-pill.stale { background: #fff6e8; color: #95671f; }
+    .source-pill.stale::before { background: #d4962e; }
+    .source-pill.offline { background: #fff0ef; color: #ac5452; }
+    .source-pill.offline::before { background: #d35a59; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 0 20px 12px; }
+    .toolbar-left, .toolbar-right { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+    .search-wrap { position: relative; width: min(255px, 100%); }
+    .search-icon { position: absolute; left: 11px; top: 50%; width: 14px; height: 14px; color: #9aa59f; transform: translateY(-50%); pointer-events: none; }
+    .search-input { width: 100%; height: 34px; padding: 0 11px 0 34px; border: 1px solid #e6ece8; border-radius: 9px; background: #fbfcfb; color: var(--ink); font-size: 11px; outline: none; transition: border-color .15s, box-shadow .15s; }
+    .search-input::placeholder { color: #a0aaa5; }
+    .search-input:focus { border-color: #98c6ab; box-shadow: 0 0 0 3px rgba(17,132,91,.08); }
+    .filter-group { display: inline-flex; align-items: center; gap: 3px; padding: 3px; border: 1px solid #e8eeea; border-radius: 9px; background: #f9fbfa; }
+    .filter-button { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border: 0; border-radius: 6px; background: transparent; color: #78857f; font-size: 10px; font-weight: 720; white-space: nowrap; transition: .15s ease; }
+    .filter-button:hover { color: #31463b; background: #eef4f0; }
+    .filter-button.active { background: #fff; color: #1c704d; box-shadow: 0 1px 4px rgba(32, 59, 47, .08); }
+    .filter-count { color: inherit; opacity: .68; font-size: 9px; font-weight: 800; }
+    .exchange-select { height: 34px; padding: 0 28px 0 10px; border: 1px solid #e6ece8; border-radius: 9px; appearance: none; background: #fff no-repeat right 10px center; color: #65746c; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .exchange-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%2385918b' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+    .action-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; padding: 0 11px; border: 1px solid #e4ebe6; border-radius: 9px; background: #fff; color: #52645a; font-size: 10px; font-weight: 760; transition: .15s ease; white-space: nowrap; }
+    .action-button:hover { border-color: #bcd9c7; color: #176d49; background: #f8fcf9; }
+    .action-button.primary { color: #fff; border-color: #167b52; background: #167b52; box-shadow: 0 3px 7px rgba(22,123,82,.12); }
+    .action-button.primary:hover { background: #0f6944; border-color: #0f6944; }
+    .action-button svg { width: 13px; height: 13px; }
+    #refreshBtn.is-loading svg { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .interval-wrap { display: flex; align-items: center; gap: 6px; color: #97a29c; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .interval-select { height: 32px; padding: 0 23px 0 8px; border: 1px solid #e6ece8; border-radius: 8px; appearance: none; background: #fff no-repeat right 7px center; color: #53645a; font-size: 10px; font-weight: 720; cursor: pointer; }
+    .interval-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%2385918b' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+    .feed-note { display: none; margin: 0 20px 10px; padding: 8px 10px; border-radius: 8px; background: #fff8ea; color: #89621f; font-size: 10px; line-height: 1.45; }
+    .feed-note.visible { display: block; }
+    .table-scroll { width: 100%; overflow-x: auto; border-top: 1px solid var(--line); }
+    .app-page[data-page-view="indices"] .table-scroll,
+    .app-page[data-page-view="etfs"] .table-scroll,
+    .app-page[data-page-view="ipos"] .table-scroll { max-height: min(62vh, 640px); overflow: auto; overscroll-behavior: contain; }
+    table { width: 100%; min-width: 920px; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+    thead { background: #f9fbfa; }
+    .table-scroll thead th { position: sticky; top: 0; z-index: 3; background: #f9fbfa; }
+    th { height: 39px; padding: 0 15px; border-bottom: 1px solid var(--line); color: #8c9992; font-size: 9px; font-weight: 820; letter-spacing: .075em; text-align: right; white-space: nowrap; }
+    th:first-child { padding-left: 22px; text-align: left; }
+    .sort-button { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; }
+    .sort-button:hover { color: #415c4d; }
+    .sort-arrow { color: #c2cbc5; font-size: 10px; }
+    .sort-button.sorted .sort-arrow { color: var(--green); }
+    tbody tr { transition: background .16s; }
+    tbody tr:hover { background: #fafcfb; }
+    .index-table { min-width: 1230px; table-layout: fixed; }
+    .index-table th { height: 48px; padding: 0 5px; font-size: 9px; }
+    .index-table .sort-button { width: 100%; justify-content: flex-end; gap: 3px; font-size: 9px; line-height: 1.15; white-space: normal; }
+    .index-table th:first-child .sort-button { justify-content: flex-start; }
+    .index-table th:first-child { position: sticky; top: 0; left: 0; z-index: 5; background: #f9fbfa; }
+    .index-table td { height: 40px; padding: 0 5px; font-size: 11px; }
+    .index-table td:first-child { padding-left: 9px; }
+    .index-table tbody tr:not(.category-row) td:first-child { position: sticky; left: 0; z-index: 1; background: #fff; box-shadow: 5px 0 9px rgba(31,57,43,.045); }
+    .index-table tbody tr:not(.category-row):hover td:first-child { background: #fafcfb; }
+    .index-table .category-row td:first-child { position: static; }
+    .index-table .name-cell { min-width: 0; gap: 6px; }
+    .index-table .index-name-wrap { min-width: 0; flex: 1; }
+    .index-table .value-main { min-width: 0; }
+    .sort-date { display: block; margin-top: 3px; color: #a3aea7; font-size: 8px; font-weight: 650; letter-spacing: 0; text-align: right; white-space: nowrap; }
+    .index-table th:first-child .sort-date { text-align: left; }
+    .category-row:hover { background: transparent; }
+    .category-row td { height: 34px; padding: 0 18px; border-top: 1px solid #e6eee8; border-bottom: 1px solid #e7eee9; background: #f3f8f5; color: #51705f; text-align: left; }
+    .category-row-content { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .category-row-name { font-size: 9px; font-weight: 850; letter-spacing: .09em; }
+    .category-row-count { color: #8a9a91; font-size: 9px; font-weight: 750; letter-spacing: .02em; }
+    td { height: 45px; padding: 0 15px; border-bottom: 1px solid #eff3f0; color: #26352e; font-size: 11px; text-align: right; white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td:first-child { padding-left: 18px; text-align: left; }
+    .name-cell { display: flex; align-items: center; min-width: 245px; gap: 9px; }
+    .star-button { width: 21px; height: 21px; display: grid; place-items: center; flex: 0 0 21px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #c2cbc5; font-size: 17px; line-height: 1; transition: .15s; }
+    .star-button:hover { background: #f4f7f5; color: #a47a28; }
+    .star-button.is-favorite { color: #d39a36; }
+    .flag-icon { display: flex; flex-direction: column; justify-content: center; width: 17px; height: 12px; flex: 0 0 17px; overflow: hidden; border: 1px solid #e9ece8; border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.03); }
+    .flag-icon i { position: relative; display: block; height: 4px; }
+    .flag-icon i:first-child { background: #ff9933; }
+    .flag-icon i:nth-child(2) { display: grid; place-items: center; background: #fff; }
+    .flag-icon i:nth-child(2)::after { content: ""; width: 3px; height: 3px; border: 1px solid #284c9b; border-radius: 50%; }
+    .flag-icon i:last-child { background: #138808; }
+    .index-name-wrap { min-width: 0; }
+    .index-title { display: block; max-width: 100%; overflow: visible; color: #25332d; font-size: 11px; font-weight: 750; line-height: 1.22; white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
+    .index-subtitle { display: block; margin-top: 3px; color: #a2aca6; font-size: 8px; font-weight: 730; letter-spacing: .08em; }
+    .value-cell { color: #2b3832; font-weight: 660; }
+    .value-main { display: inline-block; min-width: 85px; text-align: right; transition: background .2s; }
+    .change-cell { font-weight: 740; }
+    .change-chip { display: inline-block; min-width: 69px; padding: 5px 7px; border-radius: 6px; text-align: center; }
+    .change-chip.positive { background: #eff8f2; color: #15784f; }
+    .change-chip.negative { background: #fff1f0; color: #ce4849; }
+    .change-chip.neutral { background: #f2f5f3; color: #75827b; }
+    .pct-chip { display: inline-block; min-width: 59px; text-align: right; font-weight: 760; }
+    .time-cell { color: #88968e; font-size: 10px; }
+    .time-cell span { display: inline-flex; align-items: center; gap: 6px; }
+    .time-cell i { width: 5px; height: 5px; border-radius: 50%; background: #36a778; box-shadow: 0 0 0 3px rgba(54,167,120,.09); }
+    .empty-state { display: none; padding: 40px 18px; color: #85918b; text-align: center; font-size: 12px; }
+    .empty-state.visible { display: block; }
+    .panel-foot { display: flex; justify-content: space-between; gap: 12px; padding: 11px 21px; border-top: 1px solid #eff3f0; color: #9aa59f; font-size: 9px; line-height: 1.5; }
+    .panel-foot strong { color: #78867e; font-weight: 740; }
+    .panel-foot .foot-right { white-space: nowrap; }
+    .header-link { color: #537661; font-size: 11px; font-weight: 750; text-decoration: none; white-space: nowrap; }
+    .header-link:hover { color: #167b52; text-decoration: underline; }
+    .etf-section { margin-top: 14px; }
+    .etf-panel-subline { margin-top: 6px; color: #87948d; font-size: 10px; }
+    .etf-source-note { margin: 0 20px 10px; padding: 8px 11px; border: 1px solid #e8eee9; border-radius: 8px; background: #f8fbf9; color: #7b8981; font-size: 9px; line-height: 1.45; }
+    .etf-table { min-width: 1314px; table-layout: fixed; }
+    .etf-table th { height: 49px; padding: 0 4px; font-size: 8px; }
+    .etf-sort-button { width: 100%; justify-content: flex-end; gap: 3px; padding: 0; font-size: 8px; }
+    .etf-sort-button .sort-label { white-space: normal; line-height: 1.25; text-align: right; }
+    .etf-table th:nth-child(-n+4) .etf-sort-button { justify-content: flex-start; }
+    .etf-table th:nth-child(-n+4) .etf-sort-button .sort-label { text-align: left; }
+    .etf-sort-button .sort-arrow { flex: 0 0 auto; }
+    .etf-table td { height: 39px; padding: 0 5px; font-size: 10px; }
+    .etf-symbol-cell { display: flex; align-items: center; gap: 4px; min-width: 0; }
+    .etf-symbol-cell .star-button { width: 18px; height: 18px; flex-basis: 18px; font-size: 15px; }
+    .etf-table th:first-child { position: sticky; top: 0; left: 0; z-index: 5; background: #f9fbfa; }
+    .etf-table td:first-child { position: sticky; left: 0; z-index: 1; min-width: 0; padding-left: 6px; background: #fff; box-shadow: 5px 0 9px rgba(31,57,43,.045); }
+    .etf-table tbody tr:hover td:first-child { background: #fafcfb; }
+    .etf-symbol { overflow: hidden; color: #25332d; font-size: 10px; font-weight: 800; letter-spacing: .02em; text-overflow: ellipsis; }
+    .etf-table .etf-text-cell { text-align: left; }
+    .etf-text { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .etf-change { font-weight: 760; }
+    .etf-toolbar-note { color: #9aa59f; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    #etfRefreshBtn.is-loading svg { animation: spin .8s linear infinite; }
+    .etf-empty { display: none; padding: 35px 18px; color: #85918b; text-align: center; font-size: 11px; }
+    .etf-empty.visible { display: block; }
+    .etf-footnote { margin: 10px 23px 14px; color: #9aa59f; font-size: 9px; line-height: 1.45; }
+    .ipo-section { margin-top: 14px; }
+    .ipo-panel-subline { margin-top: 6px; color: #87948d; font-size: 10px; }
+    .ipo-head-right { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+    .ipo-source-link { color: #5e826d; font-size: 9px; font-weight: 760; text-decoration: none; }
+    .ipo-source-link:hover { color: #167b52; text-decoration: underline; }
+    .ipo-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 0 23px 15px; }
+    .ipo-toolbar-left, .ipo-toolbar-right { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+    .ipo-refresh-note { color: #9aa59f; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    #ipoRefreshBtn.is-loading svg { animation: spin .8s linear infinite; }
+    .ipo-source-note { margin: 0 23px 12px; padding: 9px 11px; border: 1px solid #f3e7cf; border-radius: 8px; background: #fff9ee; color: #87672f; font-size: 9px; line-height: 1.45; }
+    .ipo-source-note a { color: #76551d; font-weight: 760; }
+    .ipo-filter-group { flex-wrap: wrap; }
+    .ipo-table { min-width: 1243px; table-layout: fixed; }
+    .ipo-table th { height: 47px; padding: 0 4px; font-size: 9px; }
+    .ipo-sort-button { display: flex; width: 100%; justify-content: flex-end; gap: 3px; padding: 0; font-size: 9px; white-space: normal; }
+    .ipo-table th:first-child .ipo-sort-button { justify-content: flex-start; }
+    .ipo-table td { height: 58px; padding: 5px 5px; font-size: 11px; vertical-align: middle; }
+    .ipo-table th:first-child { position: sticky; top: 0; left: 0; z-index: 5; background: #f9fbfa; }
+    .ipo-table td:first-child { position: sticky; left: 0; z-index: 1; min-width: 0; padding-left: 7px; background: #fff; box-shadow: 5px 0 9px rgba(31,57,43,.045); text-align: left; }
+    .ipo-table tbody tr:hover td:first-child { background: #fafcfb; }
+    .ipo-name-link { display: block; max-width: 221px; overflow: hidden; color: #25332d; font-size: 11px; font-weight: 760; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+    .ipo-name-link:hover { color: #14794f; text-decoration: underline; }
+    .ipo-name-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 5px; }
+    .ipo-category { display: inline-block; color: #9aa69f; font-size: 8px; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
+    .ipo-stage { display: inline-flex; align-items: center; padding: 3px 6px; border-radius: 6px; font-size: 7px; font-weight: 850; letter-spacing: .045em; text-transform: uppercase; }
+    .ipo-stage.upcoming { background: #fff7e9; color: #9b6c1d; }
+    .ipo-stage.open { background: #eaf6ef; color: #16784f; }
+    .ipo-stage.closing { background: #fff0e6; color: #b35a24; }
+    .ipo-stage.closed { background: #f2f3f2; color: #6d7871; }
+    .ipo-stage.listed { background: #eaf0f8; color: #47678b; }
+    .ipo-listing-result { display: block; margin-top: 4px; color: #829088; font-size: 8px; font-weight: 680; }
+    .ipo-gmp-value { color: #1a714b; font-weight: 800; }
+    .ipo-gmp-value.negative { color: #cf4e50; }
+    .ipo-gmp-range { display: block; margin-top: 4px; color: #929f98; font-size: 8px; }
+    .ipo-gmp-percent { display: block; margin-top: 3px; font-size: 8px; font-weight: 740; }
+    .ipo-date-main { display: block; color: #557365; font-weight: 680; }
+    .ipo-date-detail { display: block; margin-top: 3px; color: #929f98; font-size: 8px; white-space: normal; }
+    .ipo-updated { color: #829088; font-size: 9px; }
+    .ipo-rating { color: #c17924; font-size: 11px; letter-spacing: .02em; }
+    .ipo-subscription { font-weight: 740; }
+    .ipo-anchor { font-size: 11px; font-weight: 800; }
+    .ipo-anchor.yes { color: #188454; }
+    .ipo-anchor.no { color: #a2aaa5; }
+    .ipo-empty { display: none; padding: 35px 18px; color: #85918b; text-align: center; font-size: 11px; }
+    .ipo-empty.visible { display: block; }
+    .ipo-footnote { margin: 10px 23px 14px; color: #9a8870; font-size: 9px; line-height: 1.45; }
+    .disclaimer { display: flex; align-items: flex-start; gap: 8px; margin: 13px 3px 0; color: #8d9993; font-size: 9px; line-height: 1.5; }
+    .disclaimer svg { width: 13px; height: 13px; flex: 0 0 13px; margin-top: 1px; color: #9aa7a0; }
+    .positive-flash { animation: flashGreen .75s ease-out; }
+    .negative-flash { animation: flashRed .75s ease-out; }
+    @keyframes flashGreen { 0% { background: #dbf3e2; box-shadow: 0 0 0 4px #dbf3e2; border-radius: 4px; } 100% { background: transparent; box-shadow: none; } }
+    @keyframes flashRed { 0% { background: #ffe1de; box-shadow: 0 0 0 4px #ffe1de; border-radius: 4px; } 100% { background: transparent; box-shadow: none; } }
+    .skeleton { position: relative; overflow: hidden; background: #eef2ef; color: transparent !important; border-radius: 5px; }
+    .loading-text { display: inline-block; min-width: 68px; color: #a3aea7; font-size: 10px; font-weight: 600; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 1050px) {
+      .app-shell { padding-right: 22px; padding-left: 22px; }
+      .topbar { min-height: auto; flex-wrap: wrap; gap: 10px; padding: 12px 0; }
+      .header-right { width: 100%; justify-content: space-between; }
+      .page-nav { flex: 1; }
+      .page-heading { align-items: stretch; flex-direction: column; gap: 12px; }
+      .heading-meta { width: 100%; justify-content: space-between; }
+      .news-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .quote-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { align-items: flex-start; }
+      .toolbar-left, .toolbar-right { width: 100%; }
+      .toolbar-right { justify-content: flex-end; }
+      .ipo-toolbar { align-items: flex-start; }
+      .ipo-toolbar-left, .ipo-toolbar-right { width: 100%; }
+      .ipo-toolbar-right { justify-content: flex-end; }
+    }
+    @media (max-width: 700px) {
+      .app-shell { padding-right: 14px; padding-left: 14px; }
+      .topbar { min-height: auto; align-items: flex-start; flex-direction: column; gap: 11px; padding: 12px 0; }
+      .header-right { width: 100%; gap: 0; }
+      .page-nav { width: 100%; justify-content: space-between; gap: 2px; }
+      .page-nav-link { min-height: 32px; padding: 0 8px; font-size: 9px; }
+      .live-indicator { display: none; }
+      .brand-name { font-size: 12px; }
+      .brand-sub { font-size: 8px; }
+      .brand-mark { width: 34px; height: 34px; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 15px; padding: 24px 0 17px; }
+      .news-intro { align-items: flex-start; flex-direction: column; gap: 7px; }
+      .news-section-grid { grid-template-columns: 1fr; }
+      .heading-meta { width: 100%; justify-content: space-between; }
+      .clock-box { margin-left: auto; }
+      .quote-grid { grid-template-columns: 1fr; gap: 9px; margin-bottom: 12px; }
+      .quote-card { min-height: 116px; padding: 14px 16px 12px; }
+      .quote-value { font-size: 24px; }
+      .quote-bottom { margin-top: 8px; }
+      .index-chart-head { align-items: flex-start; flex-wrap: wrap; }
+      .index-chart-controls { width: calc(100% - 41px); margin-left: 41px; }
+      .index-chart-select { min-width: 0; max-width: none; flex: 1; }
+      .index-trend-chart { height: 88px; }
+      .index-chart-foot { display: block; }
+      .panel-head { align-items: flex-start; padding: 17px 15px 13px; }
+      .source-statuses { flex-direction: column; align-items: flex-end; }
+      .toolbar { padding: 0 15px 13px; }
+      .toolbar-left { align-items: stretch; }
+      .search-wrap { width: 100%; }
+      .toolbar-right { justify-content: flex-start; gap: 7px; }
+      .interval-wrap { margin-left: auto; }
+      .panel-foot { padding: 10px 14px; }
+      .panel-foot .foot-right { display: none; }
+      .feed-note { margin-right: 15px; margin-left: 15px; }
+      .ipo-head-right { flex-direction: column; align-items: flex-end; gap: 6px; }
+      .ipo-toolbar { padding: 0 15px 13px; }
+      .ipo-toolbar-left { align-items: stretch; }
+      .ipo-toolbar-right { justify-content: space-between; }
+      .ipo-toolbar .search-wrap { width: 100%; }
+      .ipo-source-note { margin-right: 15px; margin-left: 15px; }
+      .ipo-footnote { margin-right: 15px; margin-left: 15px; }
+      .etf-source-note { margin-right: 15px; margin-left: 15px; }
+      .etf-footnote { margin-right: 15px; margin-left: 15px; }
+      h1 { font-size: 30px; }
+    }
+    @media (max-width: 410px) {
+      .live-indicator { display: none; }
+      .topbar { gap: 8px; }
+      .filter-button { padding: 0 7px; }
+      .toolbar-right { display: grid; grid-template-columns: 1fr 1fr; }
+      .interval-wrap { grid-column: span 2; justify-content: flex-end; }
+      .action-button { width: 100%; }
+      .index-chart-controls { width: 100%; margin-left: 0; gap: 5px; }
+      .index-chart-controls .index-chart-open { width: auto; flex: 0 0 auto; }
+      .index-chart-name { max-width: 130px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/index" aria-label="Gandhi &amp; Bros Co. home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 16.5h3.3l2.1-5.2 3.1 7.2 2.2-5h5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 6.5h5" stroke="#B2E773" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="brand-name">GANDHI &amp; BROS CO.</span><span class="brand-sub">INDIA MARKET MONITOR</span></span>
+      </a>
+      <div class="header-right">
+        <nav class="page-nav" aria-label="Dashboard pages">
+          <a class="page-nav-link" href="/news" data-page-link="news">News</a>
+          <a class="page-nav-link" href="/index" data-page-link="index">Index</a>
+          <a class="page-nav-link" href="/indices" data-page-link="indices">Indices</a>
+          <a class="page-nav-link" href="/etfs" data-page-link="etfs">ETFs</a>
+          <a class="page-nav-link" href="/ipos" data-page-link="ipos">IPO Watch</a>
+        </nav>
+        <span class="live-indicator"><i class="pulse-dot"></i> PUBLIC EXCHANGE FEEDS</span>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="app-page" data-page-view="news" hidden>
+      <section class="page-heading" aria-labelledby="pageTitle">
+        <div class="news-hero">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> MONEYCONTROL · LATEST HEADLINES</div>
+          <div class="news-intro">
+            <div class="news-heading-copy">
+              <h1 id="pageTitle">Latest <span>news</span></h1>
+              <p class="page-subtitle">Five latest headlines per section, including Hindi.</p>
+            </div>
+            <a class="news-source-link" href="https://www.moneycontrol.com/news/" target="_blank" rel="noopener noreferrer">Open Moneycontrol ↗</a>
+          </div>
+          <div class="news-section-grid" id="moneycontrolNewsSections">
+            <section class="moneycontrol-news-card" aria-labelledby="mcNewsTitle">
+              <header class="moneycontrol-section-head"><span class="moneycontrol-section-index">01</span><h2 id="mcNewsTitle">News</h2><a class="moneycontrol-section-link" href="https://www.moneycontrol.com/news/news-all/" target="_blank" rel="noopener noreferrer">VIEW ALL ↗</a></header>
+              <ol class="moneycontrol-news-list" id="mcNewsList-news" aria-label="Latest five Moneycontrol News headlines"><li class="news-loading">Loading News headlines…</li></ol>
+              <div class="moneycontrol-section-state" id="mcNewsStatus-news">Checking Moneycontrol News page…</div>
+            </section>
+            <section class="moneycontrol-news-card" aria-labelledby="mcBusinessTitle">
+              <header class="moneycontrol-section-head"><span class="moneycontrol-section-index">02</span><h2 id="mcBusinessTitle">Business</h2><a class="moneycontrol-section-link" href="https://www.moneycontrol.com/news/business/" target="_blank" rel="noopener noreferrer">VIEW ALL ↗</a></header>
+              <ol class="moneycontrol-news-list" id="mcNewsList-business" aria-label="Latest five Moneycontrol Business headlines"><li class="news-loading">Loading Business headlines…</li></ol>
+              <div class="moneycontrol-section-state" id="mcNewsStatus-business">Checking Moneycontrol Business page…</div>
+            </section>
+            <section class="moneycontrol-news-card" aria-labelledby="mcMarketTitle">
+              <header class="moneycontrol-section-head"><span class="moneycontrol-section-index">03</span><h2 id="mcMarketTitle">Market</h2><a class="moneycontrol-section-link" href="https://www.moneycontrol.com/news/business/markets/" target="_blank" rel="noopener noreferrer">VIEW ALL ↗</a></header>
+              <ol class="moneycontrol-news-list" id="mcNewsList-market" aria-label="Latest five Moneycontrol Market headlines"><li class="news-loading">Loading Market headlines…</li></ol>
+              <div class="moneycontrol-section-state" id="mcNewsStatus-market">Checking Moneycontrol Market page…</div>
+            </section>
+            <section class="moneycontrol-news-card" aria-labelledby="mcHindiTitle">
+              <header class="moneycontrol-section-head"><span class="moneycontrol-section-index">04</span><h2 id="mcHindiTitle">News (Hindi)</h2><a class="moneycontrol-section-link" href="https://hindi.moneycontrol.com/news/latest-news" target="_blank" rel="noopener noreferrer">सभी खबरें ↗</a></header>
+              <ol class="moneycontrol-news-list" id="mcNewsList-hindi" aria-label="Moneycontrol Hindi के पांच ताज़ा समाचार"><li class="news-loading">Loading Hindi headlines…</li></ol>
+              <div class="moneycontrol-section-state" id="mcNewsStatus-hindi">Checking Moneycontrol Hindi page…</div>
+            </section>
+          </div>
+          <div class="news-attribution" id="moneycontrolNewsUpdated" aria-live="polite">Moneycontrol headlines and links only · refreshing every 2 minutes.</div>
+        </div>
+      </section>
+
+      </div>
+
+      <div class="app-page" data-page-view="index">
+      <section class="page-heading index-page-heading" aria-labelledby="indexPageTitle">
+        <div class="page-heading-copy">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> LIVE MARKET SNAPSHOT</div>
+          <h1 id="indexPageTitle">Index <span>overview</span></h1>
+          <p class="page-subtitle">Key Indian benchmarks, commodities and the NSE trend chart.</p>
+        </div>
+        <div class="heading-meta">
+          <div class="market-status unknown" id="marketStatus" aria-live="polite"><i class="status-light"></i><span>Connecting to market</span></div>
+          <div class="clock-box"><small>INDIA STANDARD TIME</small><strong id="istClock">--:--:--</strong></div>
+        </div>
+      </section>
+
+      <section class="quote-grid" id="benchmarkCards" aria-label="Market benchmarks">
+        <article class="quote-card" data-benchmark="nifty-50"><div class="loading-text">Loading NSE quote…</div></article>
+        <article class="quote-card" data-benchmark="bse-sensex"><div class="loading-text">Loading BSE quote…</div></article>
+        <article class="quote-card" data-benchmark="india-vix"><div class="loading-text">Loading India VIX…</div></article>
+        <article class="quote-card" data-benchmark="india-gold"><div class="loading-text">Loading India gold rate…</div></article>
+        <article class="quote-card" data-benchmark="india-silver"><div class="loading-text">Loading live MCX silver quote…</div></article>
+        <article class="quote-card" data-benchmark="gift-nifty"><div class="loading-text">Loading GIFT Nifty…</div></article>
+        <article class="quote-card" data-benchmark="bitcoin"><div class="loading-text">Loading Bitcoin/INR…</div></article>
+      </section>
+
+      <section class="index-chart-panel" aria-label="NSE index trend chart">
+        <div class="index-chart-head">
+          <div class="index-chart-identity">
+            <span class="index-chart-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19.5h18"/><path d="m4.5 15 4.2-4.1 3.3 2.3 6.8-7"/><path d="M15.5 6.2h3.3v3.3"/></svg></span>
+            <div class="index-chart-copy">
+              <div class="index-chart-kicker">NSE INDEX TREND · HISTORICAL SNAPSHOTS</div>
+              <div class="index-chart-current"><span class="index-chart-name" id="indexChartName">NIFTY 50</span><strong class="index-chart-value" id="indexChartValue">—</strong><span class="index-chart-change neutral" id="indexChartChange">—</span></div>
+            </div>
+          </div>
+          <div class="index-chart-controls">
+            <label class="sr-only" for="indexChartSelect">Choose an NSE index for the chart</label>
+            <select class="exchange-select index-chart-select" id="indexChartSelect" aria-label="Choose an NSE index for the chart"><option value="nifty-50">NIFTY 50</option></select>
+            <a class="action-button index-chart-open" href="https://charting.nseindia.com/" target="_blank" rel="noopener noreferrer">Full NSE Chart ↗</a>
+          </div>
+        </div>
+        <svg class="index-trend-chart" id="indexTrendChart" viewBox="0 0 1000 132" role="img" aria-label="NSE index historical reference chart">
+          <text x="500" y="65" text-anchor="middle" fill="#8a9690" font-size="12">Waiting for NSE index data…</text>
+        </svg>
+        <p class="index-chart-foot"><span id="indexChartFootnote">NSE snapshots: 1Y ago · 1M ago · 1W ago · previous day · latest.</span><span>Reference points, not intraday candles · NSE blocks embedding, so full chart opens separately.</span></p>
+      </section>
+
+      </div>
+
+      <div class="app-page" data-page-view="indices" hidden>
+        <div class="route-page-heading">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> NSE MARKET DATA</div>
+          <h1 id="indicesPageTitle">Indices</h1>
+        </div>
+      <section class="market-card" aria-labelledby="indicesTitle">
+        <div class="panel-head">
+          <div>
+            <div class="panel-label">NSE LIVE MARKET INDICES</div>
+            <div class="panel-title-row"><h2 id="indicesTitle">All NSE indices</h2><span class="count-pill" id="indexCount">—</span></div>
+          </div>
+          <div class="source-statuses" aria-label="Exchange feed status">
+            <a class="ipo-source-link" href="https://www.nseindia.com/market-data/live-market-indices" target="_blank" rel="noopener noreferrer">NSE source ↗</a>
+            <span class="source-pill offline" id="nseSource">NSE WAITING</span>
+            <span class="source-pill offline" id="bseSource">BSE WAITING</span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <label class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" stroke-width="1.5"/><path d="m13.2 13.2 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input class="search-input" id="searchInput" type="search" autocomplete="off" placeholder="Search an index…" aria-label="Search indices" />
+            </label>
+            <div class="filter-group" role="group" aria-label="Filter by daily move">
+              <button class="filter-button active" type="button" data-move-filter="all">All <span class="filter-count" id="allCount">—</span></button>
+              <button class="filter-button" type="button" data-move-filter="gainers">Gainers</button>
+              <button class="filter-button" type="button" data-move-filter="losers">Losers</button>
+              <button class="filter-button" type="button" data-move-filter="favorites">Saved <span class="filter-count" id="savedCount">0</span></button>
+            </div>
+            <label class="sr-only" for="categorySelect">Index category</label>
+            <select class="exchange-select" id="categorySelect" aria-label="Filter by NSE index category">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <label class="interval-wrap" for="intervalSelect">Refresh
+              <select class="interval-select" id="intervalSelect" aria-label="Automatic refresh interval">
+                <option value="15000" selected>15 sec</option>
+                <option value="30000">30 sec</option>
+                <option value="60000">1 min</option>
+                <option value="0">Paused</option>
+              </select>
+            </label>
+            <button class="action-button" id="exportBtn" type="button" title="Download the visible rows as CSV">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8M4 14.5v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              CSV
+            </button>
+            <button class="action-button primary" id="refreshBtn" type="button" title="Refresh exchange data now">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 8A6.6 6.6 0 0 0 4.2 6.1L3 7.6m0 0V4.4m0 3.2h3.2M3.7 12a6.6 6.6 0 0 0 12.1 1.9l1.2-1.5m0 0v3.2m0-3.2h-3.2" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="feed-note" id="feedNote" role="status"></div>
+        <div class="table-scroll">
+          <table class="index-table" aria-label="All live NSE indices grouped by category">
+            <colgroup>
+              <col style="width:210px"><col style="width:95px"><col style="width:75px"><col style="width:80px"><col style="width:80px"><col style="width:80px"><col style="width:90px"><col style="width:85px"><col style="width:85px"><col style="width:85px"><col style="width:85px"><col style="width:90px"><col style="width:90px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col"><button class="sort-button" type="button" data-sort="name">INDEX <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="last">CURRENT <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="changePct">% CHANGE <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="open">OPEN <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="high">HIGH <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="low">LOW <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="previousClose">PREV.<br>CLOSE <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="previousDayVal">PREV.<br>DAY <span class="sort-arrow">↕</span></button><span class="sort-date" id="previousDayDate">—</span></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="oneWeekAgoVal">1W AGO <span class="sort-arrow">↕</span></button><span class="sort-date" id="oneWeekAgoDate">—</span></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="oneMonthAgoVal">1M AGO <span class="sort-arrow">↕</span></button><span class="sort-date" id="oneMonthAgoDate">—</span></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="oneYearAgoVal">1Y AGO <span class="sort-arrow">↕</span></button><span class="sort-date" id="oneYearAgoDate">—</span></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="yearHigh">52 WEEK<br>HIGH <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button" type="button" data-sort="yearLow">52 WEEK<br>LOW <span class="sort-arrow">↕</span></button></th>
+              </tr>
+            </thead>
+            <tbody id="indicesBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">No indices match these filters.</div>
+        </div>
+        <div class="panel-foot">
+          <span id="resultSummary">Waiting for the first market update…</span>
+          <span class="foot-right">Last fetch <strong id="lastFetch">—</strong> IST</span>
+        </div>
+      </section>
+
+      </div>
+
+      <div class="app-page" data-page-view="etfs" hidden>
+        <div class="route-page-heading">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> NSE EXCHANGE-TRADED FUNDS</div>
+          <h1 id="etfsPageTitle">ETFs</h1>
+        </div>
+      <section class="market-card etf-section" id="etfWatch" aria-labelledby="etfTitle">
+        <div class="panel-head">
+          <div>
+            <div class="panel-label">NSE EXCHANGE-TRADED FUNDS</div>
+            <div class="panel-title-row"><h2 id="etfTitle">ETF market watch</h2><span class="count-pill" id="etfCount">—</span></div>
+            <div class="etf-panel-subline" id="etfStats" aria-live="polite">Loading NSE ETF data…</div>
+          </div>
+          <div class="source-statuses" aria-label="ETF data source">
+            <a class="ipo-source-link" href="https://www.nseindia.com/market-data/exchange-traded-funds-etf" target="_blank" rel="noopener noreferrer">NSE ETF page ↗</a>
+            <span class="source-pill offline" id="etfSource">NSE ETF WAITING</span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <label class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" stroke-width="1.5"/><path d="m13.2 13.2 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input class="search-input" id="etfSearch" type="search" autocomplete="off" placeholder="Search ETF symbol or asset…" aria-label="Search ETFs" />
+            </label>
+            <div class="filter-group" role="group" aria-label="Filter ETFs by daily change">
+              <button class="filter-button active" type="button" data-etf-move-filter="all">All <span class="filter-count" id="etfAllCount">—</span></button>
+              <button class="filter-button" type="button" data-etf-move-filter="gainers">Gainers</button>
+              <button class="filter-button" type="button" data-etf-move-filter="losers">Losers</button>
+              <button class="filter-button" type="button" data-etf-move-filter="favorites">Saved <span class="filter-count" id="etfSavedCount">0</span></button>
+            </div>
+            <label class="sr-only" for="etfCategorySelect">ETF category</label>
+            <select class="exchange-select" id="etfCategorySelect" aria-label="Filter ETFs by category">
+              <option value="all">All categories</option>
+            </select>
+            <label class="sr-only" for="etfSubCategorySelect">ETF sub-category</label>
+            <select class="exchange-select" id="etfSubCategorySelect" aria-label="Filter ETFs by sub-category">
+              <option value="all">All sub-categories</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <span class="etf-toolbar-note">Auto-refresh: 30 sec</span>
+            <button class="action-button" id="etfExportBtn" type="button" title="Download visible ETFs as CSV">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8M4 14.5v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              CSV
+            </button>
+            <button class="action-button primary" id="etfRefreshBtn" type="button" title="Fetch the latest NSE ETF data now">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 8A6.6 6.6 0 0 0 4.2 6.1L3 7.6m0 0V4.4m0 3.2h3.2M3.7 12a6.6 6.6 0 0 0 12.1 1.9l1.2-1.5m0 0v3.2m0-3.2h-3.2" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Refresh ETFs
+            </button>
+          </div>
+        </div>
+
+        <div class="feed-note" id="etfFeedNote" role="status"></div>
+        <div class="etf-source-note">Live fields are fetched from NSE’s ETF market-watch feed. Value is shown in ₹ crores; i-NAV and NAV may update on a different schedule.</div>
+        <div class="table-scroll">
+          <table class="etf-table" aria-label="NSE ETF market data">
+            <colgroup>
+              <col style="width:100px"><col style="width:105px"><col style="width:80px"><col style="width:105px"><col style="width:58px"><col style="width:58px"><col style="width:58px"><col style="width:60px"><col style="width:60px"><col style="width:58px"><col style="width:58px"><col style="width:70px"><col style="width:70px"><col style="width:60px"><col style="width:60px"><col style="width:68px"><col style="width:68px"><col style="width:58px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col" style="text-align:left"><button class="sort-button etf-sort-button" type="button" data-etf-sort="symbol"><span class="sort-label">SYMBOL</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col" style="text-align:left"><button class="sort-button etf-sort-button" type="button" data-etf-sort="underlying"><span class="sort-label">UNDERLYING<br>ASSET</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col" style="text-align:left"><button class="sort-button etf-sort-button" type="button" data-etf-sort="category"><span class="sort-label">CATEGORY</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col" style="text-align:left"><button class="sort-button etf-sort-button" type="button" data-etf-sort="subCategory"><span class="sort-label">SUB-CATEGORY</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="open"><span class="sort-label">OPEN</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="high"><span class="sort-label">HIGH</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="low"><span class="sort-label">LOW</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="previousClose"><span class="sort-label">PREV.<br>CLOSE</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="ltp"><span class="sort-label">LTP</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="change"><span class="sort-label">CHANGE</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="changePct"><span class="sort-label">% CHANGE</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="volume"><span class="sort-label">VOLUME</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="valueCrores"><span class="sort-label">VALUE<br>(₹ CRORES)</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="iNAV"><span class="sort-label">i-NAV</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="nav"><span class="sort-label">NAV</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="yearHigh"><span class="sort-label">52 WEEK HIGH</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="yearLow"><span class="sort-label">52 WEEK LOW</span><span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button etf-sort-button" type="button" data-etf-sort="change30d"><span class="sort-label">30 D<br>% CHNG</span><span class="sort-arrow">↕</span></button></th>
+              </tr>
+            </thead>
+            <tbody id="etfBody"></tbody>
+          </table>
+          <div class="etf-empty visible" id="etfEmpty">Fetching live ETF data…</div>
+        </div>
+        <div class="panel-foot">
+          <span id="etfResultSummary">Waiting for ETF data…</span>
+          <span class="foot-right">Last fetch <strong id="etfLastFetch">—</strong> IST</span>
+        </div>
+        <p class="etf-footnote">Source: NSE Exchange Traded Funds. i-NAV, NAV and 30-day change are shown as published by NSE and may not update at the same frequency as last traded price.</p>
+      </section>
+
+      </div>
+
+      <div class="app-page" data-page-view="ipos" hidden>
+        <div class="route-page-heading">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> INVESTORGAIN · IPO GMP</div>
+          <h1 id="iposPageTitle">IPO Watch</h1>
+        </div>
+      <section class="market-card ipo-section" id="ipoWatch" aria-labelledby="ipoTitle">
+        <div class="panel-head">
+          <div>
+            <div class="panel-label">INVESTORGAIN · IPO GMP LIVE · ALL STATUSES</div>
+            <div class="panel-title-row"><h2 id="ipoTitle">Live IPO GMP table</h2><span class="count-pill" id="ipoCount">—</span></div>
+            <div class="ipo-panel-subline" id="ipoStats" aria-live="polite">Loading the complete InvestorGain IPO table…</div>
+          </div>
+          <div class="ipo-head-right">
+            <a class="ipo-source-link" href="https://www.investorgain.com/report/ipo-gmp-live/331/" target="_blank" rel="noopener noreferrer">InvestorGain source ↗</a>
+            <span class="source-pill offline" id="ipoSource">INVESTORGAIN WAITING</span>
+          </div>
+        </div>
+
+        <div class="ipo-toolbar">
+          <div class="ipo-toolbar-left">
+            <label class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" stroke-width="1.5"/><path d="m13.2 13.2 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input class="search-input" id="ipoSearch" type="search" autocomplete="off" placeholder="Search IPOs…" aria-label="Search IPOs" />
+            </label>
+            <div class="filter-group ipo-filter-group" role="group" aria-label="Filter IPOs by status">
+              <button class="filter-button active" type="button" data-ipo-filter="all">All <span class="filter-count" id="ipoAllCount">—</span></button>
+              <button class="filter-button" type="button" data-ipo-filter="U">Upcoming <span class="filter-count" id="ipoUpcomingCount">0</span></button>
+              <button class="filter-button" type="button" data-ipo-filter="O">Open <span class="filter-count" id="ipoOpenCount">0</span></button>
+              <button class="filter-button" type="button" data-ipo-filter="CT">Closing <span class="filter-count" id="ipoClosingCount">0</span></button>
+              <button class="filter-button" type="button" data-ipo-filter="C">Closed <span class="filter-count" id="ipoClosedCount">0</span></button>
+              <button class="filter-button" type="button" data-ipo-filter="L">Listed <span class="filter-count" id="ipoListedCount">0</span></button>
+            </div>
+            <label class="sr-only" for="ipoCategorySelect">IPO market segment</label>
+            <select class="exchange-select" id="ipoCategorySelect" aria-label="Filter IPOs by market segment">
+              <option value="all">All market segments</option>
+            </select>
+          </div>
+          <div class="ipo-toolbar-right">
+            <span class="ipo-refresh-note">Auto-refresh: 2 min</span>
+            <button class="action-button" id="ipoExportBtn" type="button" title="Download the visible InvestorGain IPO rows as CSV">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8M4 14.5v2h12v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              CSV
+            </button>
+            <button class="action-button primary" id="ipoRefreshBtn" type="button" title="Fetch the latest IPO table now">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.3 8A6.6 6.6 0 0 0 4.2 6.1L3 7.6m0 0V4.4m0 3.2h3.2M3.7 12a6.6 6.6 0 0 0 12.1 1.9l1.2-1.5m0 0v3.2m0-3.2h-3.2" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Refresh IPOs
+            </button>
+          </div>
+        </div>
+
+        <div class="feed-note" id="ipoFeedNote" role="status"></div>
+        <div class="ipo-source-note">
+          <strong>GMP is unofficial.</strong> Grey-market premiums are informal, unregulated estimates—not exchange prices or assured listing gains. Treat as indicative only.
+        </div>
+        <div class="table-scroll">
+          <table class="ipo-table" aria-label="InvestorGain live IPO GMP data for all statuses">
+            <colgroup>
+              <col style="width:235px"><col style="width:130px"><col style="width:55px"><col style="width:75px"><col style="width:70px"><col style="width:100px"><col style="width:62px"><col style="width:86px"><col style="width:86px"><col style="width:86px"><col style="width:96px"><col style="width:100px"><col style="width:62px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col" style="text-align:left"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="name">NAME <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="gmp">GMP <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="rating">RATING <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="subscription">SUB <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="price">PRICE (₹) <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="issueSize">IPO SIZE <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="lotSize">LOT <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="openDate">OPEN <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="closeDate">CLOSE <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="allotmentDate">BOA DT <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="listingDate">LISTING <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="updatedOn">UPDATED-ON <span class="sort-arrow">↕</span></button></th>
+                <th scope="col"><button class="sort-button ipo-sort-button" type="button" data-ipo-sort="anchorText">ANCHOR <span class="sort-arrow">↕</span></button></th>
+              </tr>
+            </thead>
+            <tbody id="ipoBody"></tbody>
+          </table>
+          <div class="ipo-empty visible" id="ipoEmpty">Fetching the complete InvestorGain IPO table…</div>
+        </div>
+        <div class="panel-foot">
+          <span id="ipoResultSummary">Waiting for the first IPO update…</span>
+          <span class="foot-right">Fetched <strong id="ipoLastFetch">—</strong> IST</span>
+        </div>
+        <p class="ipo-footnote">IPO status, dates and GMP are displayed as published by InvestorGain and may change without notice. This section is informational only—not investment advice.</p>
+      </section>
+
+      </div>
+
+      <p class="disclaimer">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.4"/><path d="M10 9v4m0-6.4v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        NSE/BSE and GIFT Nifty values come from public exchange feeds; gold is Goodreturns’ daily 24K India reference rate (per 10g), silver is Groww’s timestamped live MCX Silver futures quote (₹/kg), Bitcoin/INR is from CoinGecko, and IPO fields come from InvestorGain. Feeds may be delayed or unavailable; this is not a licensed or guaranteed tick-by-tick service. All times are India Standard Time.
+      </p>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      rows: [],
+      market: null,
+      benchmarks: {},
+      benchmarksBusy: false,
+      benchmarksLoaded: false,
+      silverBusy: false,
+      silverLoaded: false,
+      sources: {},
+      errors: {},
+      moveFilter: 'all',
+      category: 'all',
+      chartIndexId: 'nifty-50',
+      query: '',
+      sortKey: null,
+      sortDirection: 1,
+      favorites: loadFavorites(),
+      previous: new Map(),
+      busy: false,
+      timer: null,
+      interval: 15000,
+      lastChecked: null,
+    };
+
+    const ipoState = {
+      rows: [],
+      summary: { total: 0, upcoming: 0, open: 0, closingToday: 0, closed: 0, listed: 0 },
+      filter: 'all',
+      category: 'all',
+      query: '',
+      sortKey: null,
+      sortDirection: 1,
+      busy: false,
+      sourceState: 'offline',
+      checkedAt: null,
+      error: '',
+    };
+
+    const newsState = {
+      sections: {},
+      sourceState: 'offline',
+      checkedAt: null,
+      error: '',
+      busy: false,
+    };
+
+    const etfState = {
+      rows: [],
+      summary: { total: 0, advances: 0, declines: 0, unchanged: 0 },
+      category: 'all',
+      subCategory: 'all',
+      moveFilter: 'all',
+      query: '',
+      sortKey: null,
+      sortDirection: 1,
+      favorites: loadEtfFavorites(),
+      busy: false,
+      sourceState: 'offline',
+      checkedAt: null,
+      sourceTimestamp: '',
+      navDate: '',
+      market: {},
+      error: '',
+    };
+
+    const numberFormatters = new Map();
+    function fmtNumber(value, precision = 2) {
+      if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
+      if (!numberFormatters.has(precision)) {
+        numberFormatters.set(precision, new Intl.NumberFormat('en-IN', {
+          minimumFractionDigits: precision,
+          maximumFractionDigits: precision,
+        }));
+      }
+      return numberFormatters.get(precision).format(Number(value));
+    }
+    function fmtSigned(value, precision = 2) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return '—';
+      return `${n > 0 ? '+' : n < 0 ? '−' : ''}${fmtNumber(Math.abs(n), precision)}`;
+    }
+    function moveClass(value) {
+      const n = Number(value);
+      return n > 0 ? 'positive' : n < 0 ? 'negative' : 'neutral';
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    }
+    function loadFavorites() {
+      try { return new Set(JSON.parse(localStorage.getItem('marketpulse-favorites') || '[]')); }
+      catch (_) { return new Set(); }
+    }
+    function saveFavorites() {
+      try { localStorage.setItem('marketpulse-favorites', JSON.stringify([...state.favorites])); }
+      catch (_) {}
+    }
+    function loadEtfFavorites() {
+      try { return new Set(JSON.parse(localStorage.getItem('marketpulse-etf-favorites') || '[]')); }
+      catch (_) { return new Set(); }
+    }
+    function saveEtfFavorites() {
+      try { localStorage.setItem('marketpulse-etf-favorites', JSON.stringify([...etfState.favorites])); }
+      catch (_) {}
+    }
+    function getTimeFromISO(iso) {
+      if (!iso) return '—';
+      try {
+        return new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(iso));
+      } catch (_) { return '—'; }
+    }
+    function updateClock() {
+      const clock = new Intl.DateTimeFormat('en-IN', {
+        timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+      }).format(new Date());
+      document.getElementById('istClock').textContent = clock;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function renderMoneycontrolNews() {
+      const configs = [
+        { key: 'news', title: 'News' },
+        { key: 'business', title: 'Business' },
+        { key: 'market', title: 'Market' },
+        { key: 'hindi', title: 'News (Hindi)' },
+      ];
+      const checked = newsState.checkedAt ? getTimeFromISO(newsState.checkedAt) : '—';
+      let freshCount = 0;
+      configs.forEach(config => {
+        const section = newsState.sections[config.key] || {};
+        const stories = Array.isArray(section.stories) ? section.stories.slice(0, 5) : [];
+        const list = document.getElementById(`mcNewsList-${config.key}`);
+        const status = document.getElementById(`mcNewsStatus-${config.key}`);
+        if (section.sourceState === 'live') freshCount += 1;
+        if (!stories.length) {
+          list.innerHTML = `<li class="news-loading">${section.sourceState === 'offline' ? `Moneycontrol ${config.title} headlines are temporarily unavailable.` : `Loading ${config.title} headlines…`}</li>`;
+        } else {
+          list.innerHTML = stories.map((story, index) => `<li class="moneycontrol-news-item"><span class="moneycontrol-news-rank">${index + 1}</span><div class="moneycontrol-news-copy"><a class="moneycontrol-news-link" href="${escapeHtml(story.url)}" target="_blank" rel="noopener noreferrer nofollow">${escapeHtml(story.title)}</a></div></li>`).join('');
+        }
+        const sourceName = section.sourceName || (config.key === 'hindi' ? 'Moneycontrol Hindi' : 'Moneycontrol');
+        const statusText = section.sourceState === 'live'
+          ? `${sourceName} · checked ${checked} IST`
+          : section.sourceState === 'stale'
+            ? `Showing cached headlines · checked ${checked} IST`
+            : `${sourceName} source unavailable`;
+        status.textContent = statusText;
+        status.classList.toggle('stale', section.sourceState !== 'live');
+      });
+      const note = document.getElementById('moneycontrolNewsUpdated');
+      note.textContent = `Moneycontrol headlines and story links only · ${freshCount}/${configs.length} sections refreshed · checked ${checked} IST · auto-refresh every 2 minutes`;
+      note.classList.toggle('stale', freshCount < 3);
+    }
+
+    async function refreshMoneycontrolNews() {
+      if (newsState.busy) return;
+      newsState.busy = true;
+      try {
+        const response = await fetch(`/api/news?_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        newsState.sections = payload.sections || {};
+        newsState.sourceState = payload.sourceState || (payload.ok ? 'live' : 'offline');
+        newsState.checkedAt = payload.checkedAt || new Date().toISOString();
+        newsState.error = payload.errors || {};
+        renderMoneycontrolNews();
+      } catch (_) {
+        const hasCachedHeadlines = Object.values(newsState.sections).some(section => Array.isArray(section.stories) && section.stories.length);
+        newsState.sourceState = hasCachedHeadlines ? 'stale' : 'offline';
+        if (hasCachedHeadlines) {
+          Object.values(newsState.sections).forEach(section => {
+            if (section.sourceState === 'live') section.sourceState = 'stale';
+          });
+        }
+        newsState.checkedAt = newsState.checkedAt || new Date().toISOString();
+        newsState.error = 'Could not connect to Moneycontrol news sources.';
+        renderMoneycontrolNews();
+      } finally {
+        newsState.busy = false;
+      }
+    }
+
+    function miniIcon(kind) {
+      const paths = {
+        nifty: '<path d="M3 13.5h3.1l2.1-4.7 3.1 7 2.3-5h4.4"/><path d="M4 5.4h4.2"/>',
+        sensex: '<path d="M3 14.5h3.3l2-5 3.1 7 2.3-5h4.3"/><path d="M14.5 5.4H18v3.5"/>',
+        vix: '<path d="M3.5 11.5h3l1.8-5 3.2 8.5 2.1-5h3.1"/><path d="M4 16.5h12"/>',
+        gold: '<path d="m4 17 4-8h6l4 8H4Z"/><path d="m7 9 1.5-4h5L15 9"/>',
+        silver: '<path d="m11 3 8 4-8 4-8-4 8-4Z"/><path d="M3 7v8l8 4 8-4V7"/>',
+        gift: '<path d="M3 16.5h16"/><path d="m4 13.5 4-4 3 2 6-6"/><path d="M14 5.5h3v3"/>',
+        bitcoin: '<circle cx="11" cy="11" r="7.5"/><path d="M9 6.5h3.5a2 2 0 0 1 0 4H9h4a2 2 0 0 1 0 4H9m1-9v11m3-11v-1m0 13v-1"/>',
+      };
+      return `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[kind] || paths.nifty}</svg>`;
+    }
+    function rangeMarkup(row) {
+      const lo = Number(row.low), hi = Number(row.high), last = Number(row.last);
+      if (!Number.isFinite(lo) || !Number.isFinite(hi) || !Number.isFinite(last) || hi <= lo) return '<span class="quote-range"><i class="quote-range-fill"></i></span>';
+      const percent = Math.max(2, Math.min(98, ((last - lo) / (hi - lo)) * 100));
+      return `<span class="quote-range" aria-label="Position within today's high-low range"><i class="quote-range-fill"></i><i class="quote-range-marker" style="left:${percent}%"></i></span>`;
+    }
+    function renderBenchmarks() {
+      const configs = [
+        { id: 'nifty-50', title: 'NIFTY 50', meta: 'NATIONAL STOCK EXCHANGE', icon: 'nifty', kind: 'index' },
+        { id: 'bse-sensex', title: 'SENSEX', meta: 'BOMBAY STOCK EXCHANGE', icon: 'sensex', kind: 'index' },
+        { id: 'india-vix', title: 'INDIA VIX', meta: 'VOLATILITY INDEX', icon: 'vix', kind: 'index' },
+        { id: 'india-gold', title: 'INDIA GOLD 24K', meta: 'GOODRETURNS · ₹/10G · DAILY', icon: 'gold', kind: 'daily-metal', benchmarkKey: 'gold', currency: '₹', precision: 0, changePrecision: 0, fact: '24K · per 10g' },
+        { id: 'india-silver', title: 'MCX SILVER', meta: 'GROWW · LIVE MCX QUOTE · ₹/KG', icon: 'silver', kind: 'silver-futures', benchmarkKey: 'silver', currency: '₹', precision: 0, changePrecision: 0 },
+        { id: 'gift-nifty', title: 'GIFT NIFTY', meta: 'NSE IX · FUTURES', icon: 'gift', kind: 'gift' },
+        { id: 'bitcoin', title: 'BITCOIN', meta: 'COINGECKO · BTC/INR · 24H', icon: 'bitcoin', kind: 'bitcoin', benchmarkKey: 'bitcoin', currency: '₹', precision: 0, changePrecision: 0 },
+      ];
+      const container = document.getElementById('benchmarkCards');
+      container.innerHTML = configs.map(config => {
+        const row = config.kind === 'index'
+          ? state.rows.find(item => item.id === config.id)
+          : config.kind === 'gift' ? state.market?.giftNifty : state.benchmarks?.[config.benchmarkKey];
+        const label = row?.sourceState === 'stale' ? `${config.meta} · LAST DATA` : config.meta;
+        if (!row || row.last === null || row.last === undefined || !Number.isFinite(Number(row.last))) {
+          const waiting = config.kind === 'index' ? 'Waiting for exchange feed…' : config.kind === 'gift' ? (state.market ? 'GIFT Nifty quote unavailable' : 'Waiting for exchange feed…') : config.kind === 'silver-futures' && !state.silverLoaded ? 'Waiting for MCX silver feed…' : state.benchmarksLoaded ? 'Price feed unavailable' : 'Waiting for price feed…';
+          return `<article class="quote-card" data-benchmark="${escapeHtml(config.id)}" title="${escapeHtml(row?.error || '')}"><div class="quote-top"><div><div class="quote-title">${config.title}</div><div class="quote-exchange">${label}</div></div><span class="quote-mini-icon">${miniIcon(config.icon)}</span></div><div class="quote-main"><span class="loading-text">${waiting}</span></div></article>`;
+        }
+        const precision = config.precision ?? row.precision ?? 2;
+        const changePrecision = config.changePrecision ?? precision;
+        const currency = config.currency || '';
+        const cls = moveClass(row.changePct);
+        const current = `${currency}${fmtNumber(row.last, precision)}`;
+        const change = row.change == null ? '—' : `${currency}${fmtSigned(row.change, changePrecision)}`;
+        const changePct = row.changePct == null ? '—' : `${fmtSigned(row.changePct, 2)}%`;
+        let footer;
+        if (config.kind === 'index') {
+          footer = `<span>H <b>${fmtNumber(row.high, precision)}</b></span><span>L <b>${fmtNumber(row.low, precision)}</b></span>${rangeMarkup(row)}<span class="quote-range-label">DAY RANGE</span>`;
+        } else if (config.kind === 'bitcoin') {
+          footer = `<span>H <b>₹${fmtNumber(row.high, precision)}</b></span><span>L <b>₹${fmtNumber(row.low, precision)}</b></span>${rangeMarkup(row)}<span class="quote-range-label">24H RANGE</span>`;
+        } else if (config.kind === 'gift') {
+          const expiry = row.expiry || '—';
+          const asOf = row.time ? `${row.time} IST` : (row.dateTime || '—');
+          footer = `<span>EXP <b>${escapeHtml(expiry)}</b></span><span>AS OF <b>${escapeHtml(asOf)}</b></span><span class="quote-range-label">FUTURES</span>`;
+        } else if (config.kind === 'silver-futures') {
+          const asOf = row.time ? `${row.time} IST` : row.dateTime ? `${getTimeFromISO(row.dateTime)} IST` : (row.date || '—');
+          footer = `<span>H <b>${fmtNumber(row.high, precision)}</b></span><span>L <b>${fmtNumber(row.low, precision)}</b></span><span class="quote-range-label">AS OF <b>${escapeHtml(asOf)}</b></span>`;
+        } else {
+          footer = `<span>${config.fact}</span><span>As of <b>${escapeHtml(row.date || '—')}</b></span><span class="quote-range-label">INDIA RATE</span>`;
+        }
+        const sourceTitle = row.source ? ` · Source: ${row.source}` : '';
+        return `<article class="quote-card" data-benchmark="${escapeHtml(config.id)}" title="${escapeHtml(`${config.title}${sourceTitle}`)}">
+          <div class="quote-top"><div><div class="quote-title">${config.title}</div><div class="quote-exchange">${label}</div></div><span class="quote-mini-icon">${miniIcon(config.icon)}</span></div>
+          <div class="quote-main"><span class="quote-value">${current}</span><span class="quote-change ${cls}">${change} <span>(${changePct})</span></span></div>
+          <div class="quote-bottom">${footer}</div>
+        </article>`;
+      }).join('');
+    }
+
+    function filteredRows() {
+      let rows = state.rows.filter(row => row.exchange === 'NSE');
+      if (state.category !== 'all') rows = rows.filter(row => (row.category || 'OTHER INDICES') === state.category);
+      if (state.moveFilter === 'gainers') rows = rows.filter(row => Number(row.changePct) > 0);
+      if (state.moveFilter === 'losers') rows = rows.filter(row => Number(row.changePct) < 0);
+      if (state.moveFilter === 'favorites') rows = rows.filter(row => state.favorites.has(row.id));
+      const q = state.query.trim().toLowerCase();
+      if (q) rows = rows.filter(row => `${row.name} ${row.exchange} ${row.category || ''}`.toLowerCase().includes(q));
+
+      // Keep NSE's source category order, while sorting rows within each category.
+      const groups = new Map();
+      rows.forEach(row => {
+        const category = row.category || 'OTHER INDICES';
+        if (!groups.has(category)) groups.set(category, []);
+        groups.get(category).push(row);
+      });
+      const orderedRows = [];
+      for (const group of groups.values()) {
+        group.sort((a, b) => {
+          if (!state.sortKey) return a.order - b.order;
+          const av = a[state.sortKey], bv = b[state.sortKey];
+          if (av == null && bv == null) return 0;
+          if (av == null) return 1;
+          if (bv == null) return -1;
+          let compared;
+          if (typeof av === 'number' && typeof bv === 'number') compared = av - bv;
+          else compared = String(av).localeCompare(String(bv), 'en', { sensitivity: 'base', numeric: true });
+          return compared * state.sortDirection;
+        });
+        orderedRows.push(...group);
+      }
+      return orderedRows;
+    }
+
+    function updateCategorySelect() {
+      const select = document.getElementById('categorySelect');
+      const counts = new Map();
+      state.rows.filter(row => row.exchange === 'NSE').forEach(row => {
+        const category = row.category || 'OTHER INDICES';
+        counts.set(category, (counts.get(category) || 0) + 1);
+      });
+      const total = [...counts.values()].reduce((sum, count) => sum + count, 0);
+      if (state.category !== 'all' && !counts.has(state.category)) state.category = 'all';
+      select.innerHTML = `<option value="all">All categories (${total || 0})</option>` + [...counts.entries()].map(([category, count]) =>
+        `<option value="${escapeHtml(category)}">${escapeHtml(category)} (${count})</option>`
+      ).join('');
+      select.value = state.category;
+    }
+
+    function renderTable() {
+      const body = document.getElementById('indicesBody');
+      const rows = filteredRows();
+      const nseTotal = state.rows.filter(row => row.exchange === 'NSE').length;
+      document.getElementById('emptyState').classList.toggle('visible', rows.length === 0);
+      document.getElementById('indexCount').textContent = nseTotal || '—';
+      document.getElementById('allCount').textContent = nseTotal || '—';
+      document.getElementById('savedCount').textContent = state.favorites.size;
+      document.getElementById('resultSummary').innerHTML = nseTotal
+        ? `<strong>${rows.length}</strong> shown of <strong>${nseTotal}</strong> indices from the NSE live-market page`
+        : 'Connecting to the NSE index feed…';
+      const groups = new Map();
+      rows.forEach(row => {
+        const category = row.category || 'OTHER INDICES';
+        if (!groups.has(category)) groups.set(category, []);
+        groups.get(category).push(row);
+      });
+      body.innerHTML = [...groups.entries()].map(([category, groupRows]) => {
+        const categoryHeader = `<tr class="category-row"><td colspan="13"><div class="category-row-content"><span class="category-row-name">${escapeHtml(category)}</span><span class="category-row-count">${groupRows.length} ${groupRows.length === 1 ? 'index' : 'indices'}</span></div></td></tr>`;
+        const rowMarkup = groupRows.map(row => {
+          const id = escapeHtml(row.id);
+          const fav = state.favorites.has(row.id);
+          const cls = moveClass(row.changePct);
+          const precision = row.precision ?? 2;
+          const before = state.previous.get(row.id);
+          let flash = '';
+          if (before !== undefined && Number.isFinite(Number(row.last)) && Number(row.last) !== before) {
+            flash = Number(row.last) > before ? 'positive-flash' : 'negative-flash';
+          }
+          return `<tr data-row-id="${id}">
+            <td><div class="name-cell">
+              <button class="star-button ${fav ? 'is-favorite' : ''}" type="button" data-favorite="${id}" aria-label="${fav ? 'Remove from saved indices' : 'Save index'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
+              <span class="flag-icon" aria-label="India"><i></i><i></i><i></i></span>
+              <span class="index-name-wrap"><span class="index-title">${escapeHtml(row.name)}</span><span class="index-subtitle">${escapeHtml(row.exchange)} INDEX</span></span>
+            </div></td>
+            <td class="value-cell"><span class="value-main ${flash}">${fmtNumber(row.last, precision)}</span></td>
+            <td><span class="pct-chip ${cls}">${fmtSigned(row.changePct, 2)}%</span></td>
+            <td>${fmtNumber(row.open, precision)}</td>
+            <td>${fmtNumber(row.high, precision)}</td>
+            <td>${fmtNumber(row.low, precision)}</td>
+            <td>${fmtNumber(row.previousClose, precision)}</td>
+            <td>${fmtNumber(row.previousDayVal, precision)}</td>
+            <td>${fmtNumber(row.oneWeekAgoVal, precision)}</td>
+            <td>${fmtNumber(row.oneMonthAgoVal, precision)}</td>
+            <td>${fmtNumber(row.oneYearAgoVal, precision)}</td>
+            <td>${fmtNumber(row.yearHigh, precision)}</td>
+            <td>${fmtNumber(row.yearLow, precision)}</td>
+          </tr>`;
+        }).join('');
+        return categoryHeader + rowMarkup;
+      }).join('');
+      state.rows.forEach(row => {
+        if (Number.isFinite(Number(row.last))) state.previous.set(row.id, Number(row.last));
+      });
+      document.querySelectorAll('[data-sort]').forEach(button => {
+        const active = button.dataset.sort === state.sortKey;
+        button.classList.toggle('sorted', active);
+        const arrow = button.querySelector('.sort-arrow');
+        if (arrow) arrow.textContent = active ? (state.sortDirection === 1 ? '↑' : '↓') : '↕';
+      });
+    }
+
+    function renderMarketStatus() {
+      const el = document.getElementById('marketStatus');
+      const market = state.market || {};
+      const status = String(market.status || 'Unknown').toLowerCase();
+      const isOpen = status.includes('open');
+      const isClosed = status.includes('closed');
+      el.classList.toggle('closed', isClosed);
+      el.classList.toggle('unknown', !isOpen && !isClosed);
+      el.querySelector('span').textContent = isOpen ? 'MARKET OPEN' : isClosed ? 'MARKET CLOSED' : 'MARKET STATUS UNKNOWN';
+    }
+
+    function setSourceBadge(id, name, info) {
+      const element = document.getElementById(id);
+      const status = info?.state || 'offline';
+      element.classList.toggle('stale', status === 'stale');
+      element.classList.toggle('offline', status === 'offline');
+      const label = status === 'live' ? 'LIVE' : status === 'stale' ? 'LAST DATA' : 'OFFLINE';
+      element.textContent = `${name} ${label}`;
+      element.title = info?.fetchedAt ? `Last successful source fetch: ${getTimeFromISO(info.fetchedAt)} IST` : `${name} feed is not available`;
+    }
+
+    function renderFeedNote() {
+      const note = document.getElementById('feedNote');
+      const messages = [];
+      for (const sourceName of ['NSE', 'BSE']) {
+        const source = state.sources[sourceName];
+        if (source?.state === 'stale') messages.push(`${sourceName} could not be refreshed; showing the last available quote.`);
+        if (source?.state === 'offline') messages.push(`${sourceName} feed is currently unavailable.`);
+      }
+      for (const [name, error] of Object.entries(state.errors || {})) {
+        if (error && !messages.some(message => message.startsWith(name))) messages.push(`${name}: ${error}`);
+      }
+      note.textContent = messages.join(' ');
+      note.classList.toggle('visible', messages.length > 0);
+    }
+
+    function updateIndexDateHeadings() {
+      const row = state.rows.find(item => item.exchange === 'NSE');
+      if (!row) return;
+      document.getElementById('previousDayDate').textContent = row.datePreviousDay || '—';
+      document.getElementById('oneWeekAgoDate').textContent = row.dateOneWeekAgo || '—';
+      document.getElementById('oneMonthAgoDate').textContent = row.dateOneMonthAgo || '—';
+      document.getElementById('oneYearAgoDate').textContent = row.dateOneYearAgo || '—';
+    }
+
+    function updateIndexChartOptions() {
+      const select = document.getElementById('indexChartSelect');
+      const rows = state.rows.filter(item => item.exchange === 'NSE').sort((a, b) => a.order - b.order);
+      if (!rows.length) { renderIndexChart(); return; }
+      const optionKey = rows.map(row => row.id).join('|');
+      if (select.dataset.optionKey !== optionKey) {
+        select.innerHTML = rows.map(row => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.name)}</option>`).join('');
+        select.dataset.optionKey = optionKey;
+      }
+      const selected = rows.find(row => row.id === state.chartIndexId) || rows.find(row => row.id === 'nifty-50') || rows[0];
+      state.chartIndexId = selected.id;
+      select.value = selected.id;
+      renderIndexChart();
+    }
+
+    function renderIndexChart() {
+      const svg = document.getElementById('indexTrendChart');
+      const select = document.getElementById('indexChartSelect');
+      const row = state.rows.find(item => item.exchange === 'NSE' && item.id === (select.value || state.chartIndexId));
+      const nameElement = document.getElementById('indexChartName');
+      const valueElement = document.getElementById('indexChartValue');
+      const changeElement = document.getElementById('indexChartChange');
+      const footnote = document.getElementById('indexChartFootnote');
+      if (!row) {
+        nameElement.textContent = 'NIFTY 50';
+        valueElement.textContent = '—';
+        changeElement.textContent = 'Waiting for NSE…';
+        svg.innerHTML = '<text x="500" y="68" text-anchor="middle" fill="#8a9690" font-size="12">Waiting for NSE index data…</text>';
+        return;
+      }
+      nameElement.textContent = row.name;
+      valueElement.textContent = fmtNumber(row.last, row.precision ?? 2);
+      changeElement.textContent = row.changePct == null ? '—' : `${fmtSigned(row.changePct, 2)}% today`;
+      changeElement.className = `index-chart-change ${moveClass(row.changePct)}`;
+      const tradeDate = String(state.market?.tradeDate || '').split(/\s+/)[0] || 'Latest';
+      const points = [
+        { label: row.dateOneYearAgo || '1Y ago', value: row.oneYearAgoVal },
+        { label: row.dateOneMonthAgo || '1M ago', value: row.oneMonthAgoVal },
+        { label: row.dateOneWeekAgo || '1W ago', value: row.oneWeekAgoVal },
+        { label: row.datePreviousDay || 'Previous day', value: row.previousDayVal },
+        { label: tradeDate, value: row.last },
+      ].filter(point => point.value !== null && point.value !== undefined && Number.isFinite(Number(point.value)))
+        .map(point => ({ ...point, value: Number(point.value) }));
+      if (points.length < 2) {
+        svg.innerHTML = '<text x="500" y="68" text-anchor="middle" fill="#8a9690" font-size="12">Historical points are not available for this index yet.</text>';
+        footnote.textContent = 'NSE historical snapshot values are not available for this index.';
+        return;
+      }
+      const precision = row.precision ?? 2;
+      const minValue = Math.min(...points.map(point => point.value));
+      const maxValue = Math.max(...points.map(point => point.value));
+      const span = maxValue - minValue || Math.max(Math.abs(maxValue) * 0.01, 1);
+      const left = 78, right = 986, top = 10, bottom = 94;
+      const plotWidth = right - left;
+      const coords = points.map((point, index) => ({
+        ...point,
+        x: left + (points.length === 1 ? plotWidth / 2 : index * plotWidth / (points.length - 1)),
+        y: top + ((maxValue - point.value) / span) * (bottom - top),
+      }));
+      const line = coords.map((point, index) => `${index ? 'L' : 'M'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(' ');
+      const area = `${line} L ${coords[coords.length - 1].x.toFixed(1)} ${bottom} L ${coords[0].x.toFixed(1)} ${bottom} Z`;
+      const color = Number(row.changePct) < 0 ? '#d94c50' : '#168255';
+      const fill = Number(row.changePct) < 0 ? '#fff0ef' : '#eaf6ef';
+      const grid = [0, 1, 2].map(index => {
+        const y = top + index * (bottom - top) / 2;
+        const value = maxValue - index * span / 2;
+        return `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#e8efea" stroke-width="1"/><text x="68" y="${y + 3}" text-anchor="end" fill="#99a59e" font-size="8">${escapeHtml(fmtNumber(value, precision))}</text>`;
+      }).join('');
+      const labels = coords.map(point => `<text x="${point.x}" y="119" text-anchor="middle" fill="#8b9891" font-size="8">${escapeHtml(point.label)}</text>`).join('');
+      const dots = coords.map(point => `<circle cx="${point.x}" cy="${point.y}" r="3.5" fill="#fff" stroke="${color}" stroke-width="2"><title>${escapeHtml(point.label)}: ${escapeHtml(fmtNumber(point.value, precision))}</title></circle>`).join('');
+      svg.setAttribute('aria-label', `${row.name} trend from NSE historical snapshots`);
+      svg.innerHTML = `<defs><linearGradient id="indexTrendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${fill}" stop-opacity=".9"/><stop offset="100%" stop-color="${fill}" stop-opacity=".12"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#indexTrendFill)"/><path d="${line}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}`;
+      footnote.textContent = `NSE reference snapshots · ${points.length} points · ${points.map(point => point.label).join(' · ')}`;
+    }
+
+    function renderAll() {
+      renderBenchmarks();
+      updateCategorySelect();
+      updateIndexDateHeadings();
+      updateIndexChartOptions();
+      renderTable();
+      renderMarketStatus();
+      setSourceBadge('nseSource', 'NSE', state.sources.NSE);
+      setSourceBadge('bseSource', 'BSE', state.sources.BSE);
+      renderFeedNote();
+      document.getElementById('lastFetch').textContent = state.lastChecked ? getTimeFromISO(state.lastChecked) : '—';
+    }
+
+    async function refreshData(manual = false) {
+      if (state.busy) return;
+      state.busy = true;
+      const button = document.getElementById('refreshBtn');
+      button.classList.add('is-loading');
+      button.setAttribute('aria-busy', 'true');
+      try {
+        const response = await fetch(`/api/indices?force=${manual ? 1 : 0}&_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (payload.indices?.length) {
+          state.rows = payload.indices;
+          state.market = payload.market || null;
+          state.sources = payload.sources || {};
+          state.errors = payload.errors || {};
+          state.lastChecked = payload.checkedAt || new Date().toISOString();
+          renderAll();
+        } else {
+          state.errors = { ...(payload.errors || {}), API: payload.error || 'Could not load market quotes.' };
+          if (!state.rows.length) {
+            document.getElementById('resultSummary').textContent = 'Waiting for exchange data…';
+            document.getElementById('feedNote').textContent = 'No live quote has been received yet. The page will retry automatically.';
+            document.getElementById('feedNote').classList.add('visible');
+          }
+        }
+      } catch (error) {
+        state.errors = { ...state.errors, Network: 'The local market-data service could not be reached.' };
+        if (!state.rows.length) {
+          document.getElementById('feedNote').textContent = 'Could not connect to the market-data service. Please wait a moment or press Refresh.';
+          document.getElementById('feedNote').classList.add('visible');
+        } else {
+          renderFeedNote();
+        }
+      } finally {
+        state.busy = false;
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+      }
+    }
+
+    async function refreshBenchmarks() {
+      if (state.benchmarksBusy) return;
+      state.benchmarksBusy = true;
+      try {
+        const response = await fetch(`/api/benchmarks?_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (payload.benchmarks) state.benchmarks = { ...state.benchmarks, ...payload.benchmarks };
+        state.benchmarksLoaded = true;
+        renderBenchmarks();
+      } catch (_) {
+        state.benchmarksLoaded = true;
+        renderBenchmarks();
+      } finally {
+        state.benchmarksBusy = false;
+      }
+    }
+
+    async function refreshSilver(manual = false) {
+      if (state.silverBusy) return;
+      state.silverBusy = true;
+      try {
+        const response = await fetch(`/api/silver?force=${manual ? 1 : 0}&_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if ('benchmark' in payload) state.benchmarks.silver = payload.benchmark;
+        state.silverLoaded = true;
+        renderBenchmarks();
+      } catch (_) {
+        if (state.benchmarks.silver) state.benchmarks.silver = { ...state.benchmarks.silver, sourceState: 'stale' };
+        state.silverLoaded = true;
+        renderBenchmarks();
+      } finally {
+        state.silverBusy = false;
+      }
+    }
+
+    const etfPriceFormatter = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    const etfCroreFormatter = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const etfVolumeFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+    function fmtEtfNumber(value) {
+      if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '—';
+      return etfPriceFormatter.format(Number(value));
+    }
+    function fmtEtfCrores(value) {
+      if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '—';
+      return etfCroreFormatter.format(Number(value));
+    }
+    function fmtEtfVolume(value) {
+      if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '—';
+      return etfVolumeFormatter.format(Number(value));
+    }
+    function fmtEtfSigned(value) {
+      if (value === null || value === undefined || value === '') return '—';
+      return `${fmtSigned(value, 2)}`;
+    }
+    function etfFilteredRows() {
+      const query = etfState.query.trim().toLowerCase();
+      let rows = etfState.rows.filter(row => {
+        if (etfState.category !== 'all' && row.category !== etfState.category) return false;
+        if (etfState.subCategory !== 'all' && row.subCategory !== etfState.subCategory) return false;
+        if (etfState.moveFilter === 'gainers' && Number(row.changePct) <= 0) return false;
+        if (etfState.moveFilter === 'losers' && Number(row.changePct) >= 0) return false;
+        if (etfState.moveFilter === 'favorites' && !etfState.favorites.has(row.symbol)) return false;
+        if (query && !`${row.symbol || ''} ${row.underlying || ''} ${row.category || ''} ${row.subCategory || ''}`.toLowerCase().includes(query)) return false;
+        return true;
+      });
+      if (etfState.sortKey) {
+        rows.sort((a, b) => {
+          const av = a[etfState.sortKey], bv = b[etfState.sortKey];
+          if (av == null && bv == null) return 0;
+          if (av == null) return 1;
+          if (bv == null) return -1;
+          let compared;
+          if (typeof av === 'number' && typeof bv === 'number') compared = av - bv;
+          else compared = String(av).localeCompare(String(bv), 'en', { sensitivity: 'base', numeric: true });
+          return compared * etfState.sortDirection;
+        });
+      }
+      return rows;
+    }
+    function updateEtfFilterOptions() {
+      const categorySelect = document.getElementById('etfCategorySelect');
+      const subCategorySelect = document.getElementById('etfSubCategorySelect');
+      const categories = [...new Set(etfState.rows.map(row => row.category || 'Other'))];
+      if (etfState.category !== 'all' && !categories.includes(etfState.category)) etfState.category = 'all';
+      categorySelect.innerHTML = `<option value="all">All categories (${etfState.rows.length})</option>` + categories.map(category => {
+        const count = etfState.rows.filter(row => (row.category || 'Other') === category).length;
+        return `<option value="${escapeHtml(category)}">${escapeHtml(category)} (${count})</option>`;
+      }).join('');
+      categorySelect.value = etfState.category;
+      const subRows = etfState.category === 'all' ? etfState.rows : etfState.rows.filter(row => row.category === etfState.category);
+      const subCategories = [...new Set(subRows.map(row => row.subCategory || '—'))];
+      if (etfState.subCategory !== 'all' && !subCategories.includes(etfState.subCategory)) etfState.subCategory = 'all';
+      subCategorySelect.innerHTML = `<option value="all">All sub-categories (${subRows.length})</option>` + subCategories.map(subCategory => {
+        const count = subRows.filter(row => (row.subCategory || '—') === subCategory).length;
+        return `<option value="${escapeHtml(subCategory)}">${escapeHtml(subCategory)} (${count})</option>`;
+      }).join('');
+      subCategorySelect.value = etfState.subCategory;
+    }
+    function renderEtfFeedNote() {
+      const note = document.getElementById('etfFeedNote');
+      let message = '';
+      if (etfState.sourceState === 'stale') {
+        message = `NSE ETF feed could not be refreshed; showing the last available snapshot.${etfState.error ? ` ${etfState.error}` : ''}`;
+      } else if (etfState.sourceState === 'offline') {
+        message = `NSE ETF data is temporarily unavailable.${etfState.error ? ` ${etfState.error}` : ''}`;
+      }
+      note.textContent = message;
+      note.classList.toggle('visible', Boolean(message));
+    }
+    function renderEtfs() {
+      updateEtfFilterOptions();
+      const rows = etfFilteredRows();
+      const total = etfState.rows.length;
+      const summary = etfState.summary || {};
+      const marketMessage = etfState.market?.marketStatusMessage || etfState.market?.marketStatus || '';
+      document.getElementById('etfCount').textContent = total || '—';
+      document.getElementById('etfAllCount').textContent = total || '—';
+      document.getElementById('etfSavedCount').textContent = etfState.favorites.size;
+      document.querySelectorAll('[data-etf-move-filter]').forEach(button => {
+        button.classList.toggle('active', button.dataset.etfMoveFilter === etfState.moveFilter);
+      });
+      document.querySelectorAll('[data-etf-sort]').forEach(button => {
+        const active = button.dataset.etfSort === etfState.sortKey;
+        button.classList.toggle('sorted', active);
+        const arrow = button.querySelector('.sort-arrow');
+        if (arrow) arrow.textContent = active ? (etfState.sortDirection === 1 ? '↑' : '↓') : '↕';
+      });
+      document.getElementById('etfStats').textContent = total
+        ? `${total} ETFs · ${summary.advances || 0} advances · ${summary.declines || 0} declines · ${summary.unchanged || 0} unchanged${etfState.sourceTimestamp ? ` · NSE as of ${etfState.sourceTimestamp}` : ''}${etfState.navDate ? ` · NAV date ${etfState.navDate}` : ''}`
+        : etfState.sourceState === 'offline' ? 'NSE ETF feed unavailable' : 'Waiting for NSE ETF data…';
+      document.getElementById('etfResultSummary').textContent = total
+        ? `Showing ${rows.length} of ${total} ETFs${marketMessage ? ` · ${marketMessage}` : ''}${summary.valueCrores != null ? ` · Total value ₹${fmtEtfCrores(summary.valueCrores)} Cr` : ''}`
+        : 'No ETF rows received yet.';
+      document.getElementById('etfLastFetch').textContent = etfState.checkedAt ? getTimeFromISO(etfState.checkedAt) : '—';
+      setSourceBadge('etfSource', 'NSE ETF', { state: etfState.sourceState, fetchedAt: etfState.checkedAt });
+      renderEtfFeedNote();
+
+      const empty = document.getElementById('etfEmpty');
+      empty.classList.toggle('visible', rows.length === 0);
+      if (rows.length) empty.textContent = 'No ETFs match this search or category filter.';
+      else if (total) empty.textContent = 'No ETFs match this search or category filter.';
+      else if (etfState.sourceState === 'offline') empty.textContent = 'ETF information is temporarily unavailable. Use Refresh ETFs to try again.';
+      else empty.textContent = 'Fetching live ETF data…';
+
+      document.getElementById('etfBody').innerHTML = rows.map(row => {
+        const cls = moveClass(row.change);
+        const pctCls = moveClass(row.changePct);
+        const textCell = value => `<td class="etf-text-cell" title="${escapeHtml(value || '—')}"><span class="etf-text">${escapeHtml(value || '—')}</span></td>`;
+        return `<tr>
+          <td><div class="etf-symbol-cell"><button class="star-button ${etfState.favorites.has(row.symbol) ? 'is-favorite' : ''}" type="button" data-etf-favorite="${escapeHtml(row.symbol)}" aria-label="${etfState.favorites.has(row.symbol) ? 'Remove ETF from saved list' : 'Save ETF'}" aria-pressed="${etfState.favorites.has(row.symbol)}">${etfState.favorites.has(row.symbol) ? '★' : '☆'}</button><span class="etf-symbol" title="${escapeHtml(row.symbol || '—')}">${escapeHtml(row.symbol || '—')}</span></div></td>
+          ${textCell(row.underlying)}
+          ${textCell(row.category)}
+          ${textCell(row.subCategory)}
+          <td>${fmtEtfNumber(row.open)}</td>
+          <td>${fmtEtfNumber(row.high)}</td>
+          <td>${fmtEtfNumber(row.low)}</td>
+          <td>${fmtEtfNumber(row.previousClose)}</td>
+          <td class="value-cell">${fmtEtfNumber(row.ltp)}</td>
+          <td class="etf-change ${cls}">${fmtEtfSigned(row.change)}</td>
+          <td class="etf-change ${pctCls}">${row.changePct == null ? '—' : `${fmtEtfSigned(row.changePct)}%`}</td>
+          <td>${fmtEtfVolume(row.volume)}</td>
+          <td>${fmtEtfCrores(row.valueCrores)}</td>
+          <td>${fmtEtfNumber(row.iNAV)}</td>
+          <td>${fmtEtfNumber(row.nav)}</td>
+          <td>${fmtEtfNumber(row.yearHigh)}</td>
+          <td>${fmtEtfNumber(row.yearLow)}</td>
+          <td class="etf-change ${moveClass(row.change30d)}">${row.change30d == null ? '—' : `${fmtSigned(row.change30d, 2)}%`}</td>
+        </tr>`;
+      }).join('');
+    }
+    async function refreshEtfs(manual = false) {
+      if (etfState.busy) return;
+      etfState.busy = true;
+      const button = document.getElementById('etfRefreshBtn');
+      button.classList.add('is-loading');
+      button.setAttribute('aria-busy', 'true');
+      try {
+        const response = await fetch(`/api/etfs?force=${manual ? 1 : 0}&_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (Array.isArray(payload.rows) && payload.rows.length) {
+          etfState.rows = payload.rows;
+          etfState.summary = payload.summary || { total: payload.rows.length };
+          etfState.navDate = payload.navDate || '';
+          etfState.sourceTimestamp = payload.sourceTimestamp || '';
+          etfState.market = payload.market || {};
+        }
+        etfState.sourceState = payload.sourceState || (payload.ok ? 'live' : 'offline');
+        etfState.checkedAt = payload.checkedAt || new Date().toISOString();
+        etfState.error = payload.error || '';
+        if (!response.ok && !etfState.rows.length) etfState.sourceState = 'offline';
+        renderEtfs();
+      } catch (_) {
+        etfState.sourceState = etfState.rows.length ? 'stale' : 'offline';
+        etfState.error = 'Could not connect to the local ETF data service.';
+        renderEtfs();
+      } finally {
+        etfState.busy = false;
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+      }
+    }
+
+    function ipoMetric(value) {
+      if (value === null || value === undefined) return null;
+      const match = String(value).replace(/,/g, '').match(/[-+]?\d+(?:\.\d+)?/);
+      return match ? Number(match[0]) : null;
+    }
+    function ipoSortValue(row, key) {
+      if (key === 'rating') return (String(row.rating || '').match(/🔥/g) || []).length;
+      if (key === 'subscription') return ipoMetric(row.subscription);
+      if (key === 'issueSize') return ipoMetric(row.issueSize);
+      if (key === 'lotSize') return ipoMetric(row.lotSize);
+      if (key === 'anchorText') return row.anchor ? 1 : 0;
+      return row[key];
+    }
+    function ipoFilteredRows() {
+      const query = ipoState.query.trim().toLowerCase();
+      let rows = ipoState.rows.filter(row => {
+        if (ipoState.filter !== 'all' && row.statusCode !== ipoState.filter) return false;
+        if (ipoState.category !== 'all' && row.category !== ipoState.category) return false;
+        const searchable = [row.name, row.category, row.status, row.gmpText, row.rating, row.subscription, row.priceText, row.issueSize, row.lotSize, row.openRaw, row.closeRaw, row.allotmentRaw, row.listingRaw, row.updatedOn, row.anchorText, row.listingDetail].join(' ').toLowerCase();
+        if (query && !searchable.includes(query)) return false;
+        return true;
+      });
+      if (ipoState.sortKey) {
+        rows.sort((a, b) => {
+          const av = ipoSortValue(a, ipoState.sortKey), bv = ipoSortValue(b, ipoState.sortKey);
+          if (av == null && bv == null) return 0;
+          if (av == null) return 1;
+          if (bv == null) return -1;
+          const compared = typeof av === 'number' && typeof bv === 'number'
+            ? av - bv
+            : String(av).localeCompare(String(bv), 'en', { sensitivity: 'base', numeric: true });
+          return compared * ipoState.sortDirection;
+        });
+      }
+      return rows;
+    }
+
+    function fmtIpoNumber(value) {
+      if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
+      return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(Number(value));
+    }
+    function fmtIpoRupees(value) {
+      if (value === null || value === undefined || value === '') return '—';
+      const number = Number(value);
+      if (!Number.isFinite(number)) return '—';
+      return `${number < 0 ? '−' : ''}₹${fmtIpoNumber(Math.abs(number))}`;
+    }
+    function renderIpoFeedNote() {
+      const note = document.getElementById('ipoFeedNote');
+      let message = '';
+      if (ipoState.sourceState === 'stale') {
+        message = `InvestorGain could not be refreshed; showing the last available IPO data.${ipoState.error ? ` ${ipoState.error}` : ''}`;
+      } else if (ipoState.sourceState === 'offline') {
+        message = `InvestorGain IPO data is temporarily unavailable.${ipoState.error ? ` ${ipoState.error}` : ''}`;
+      }
+      note.textContent = message;
+      note.classList.toggle('visible', Boolean(message));
+    }
+    function updateIpoCategorySelect() {
+      const select = document.getElementById('ipoCategorySelect');
+      const categories = [...new Set(ipoState.rows.map(row => row.category || 'IPO'))];
+      if (ipoState.category !== 'all' && !categories.includes(ipoState.category)) ipoState.category = 'all';
+      select.innerHTML = `<option value="all">All market segments (${ipoState.rows.length})</option>` + categories.map(category => {
+        const count = ipoState.rows.filter(row => (row.category || 'IPO') === category).length;
+        return `<option value="${escapeHtml(category)}">${escapeHtml(category)} (${count})</option>`;
+      }).join('');
+      select.value = ipoState.category;
+    }
+    function ipoDateMarkup(primary, raw) {
+      const date = String(primary || '').trim();
+      const full = String(raw || primary || '').trim();
+      const detail = date && full.startsWith(date) ? full.slice(date.length).trim() : (full !== date ? full : '');
+      return `<span class="ipo-date-main">${escapeHtml(date || '—')}</span>${detail ? `<small class="ipo-date-detail">${escapeHtml(detail)}</small>` : ''}`;
+    }
+    function renderIPOs() {
+      updateIpoCategorySelect();
+      const rows = ipoFilteredRows();
+      const total = ipoState.rows.length;
+      const summary = ipoState.summary || {};
+      const upcoming = Number(summary.upcoming || 0);
+      const open = Number(summary.open || 0);
+      const closingToday = Number(summary.closingToday || 0);
+      const closed = Number(summary.closed || 0);
+      const listed = Number(summary.listed || 0);
+      document.getElementById('ipoCount').textContent = total || '—';
+      document.getElementById('ipoAllCount').textContent = total || '—';
+      document.getElementById('ipoOpenCount').textContent = open;
+      document.getElementById('ipoUpcomingCount').textContent = upcoming;
+      document.getElementById('ipoClosingCount').textContent = closingToday;
+      document.getElementById('ipoClosedCount').textContent = closed;
+      document.getElementById('ipoListedCount').textContent = listed;
+      document.getElementById('ipoStats').textContent = total
+        ? `${total} source rows · ${upcoming} upcoming · ${open} open · ${closingToday} closing today · ${closed} closed · ${listed} listed`
+        : ipoState.sourceState === 'offline' ? 'InvestorGain IPO source currently unavailable' : 'Waiting for the complete IPO table…';
+      document.getElementById('ipoResultSummary').textContent = total
+        ? `Showing ${rows.length} of ${total} InvestorGain records`
+        : 'No IPO rows received yet.';
+      document.getElementById('ipoLastFetch').textContent = ipoState.checkedAt ? getTimeFromISO(ipoState.checkedAt) : '—';
+      document.querySelectorAll('[data-ipo-filter]').forEach(button => {
+        button.classList.toggle('active', button.dataset.ipoFilter === ipoState.filter);
+      });
+      document.querySelectorAll('[data-ipo-sort]').forEach(button => {
+        const active = button.dataset.ipoSort === ipoState.sortKey;
+        button.classList.toggle('sorted', active);
+        const arrow = button.querySelector('.sort-arrow');
+        if (arrow) arrow.textContent = active ? (ipoState.sortDirection === 1 ? '↑' : '↓') : '↕';
+      });
+      setSourceBadge('ipoSource', 'INVESTORGAIN', { state: ipoState.sourceState, fetchedAt: ipoState.checkedAt });
+      renderIpoFeedNote();
+
+      const empty = document.getElementById('ipoEmpty');
+      empty.classList.toggle('visible', rows.length === 0);
+      if (rows.length) empty.textContent = 'No IPOs match this search or market-segment filter.';
+      else if (total) empty.textContent = 'No IPOs match these status, market or search filters.';
+      else if (ipoState.sourceState === 'offline') empty.textContent = 'InvestorGain IPO data is temporarily unavailable. Use Refresh IPOs to try again.';
+      else empty.textContent = 'Fetching the complete InvestorGain IPO table…';
+
+      document.getElementById('ipoBody').innerHTML = rows.map(row => {
+        const statusClasses = { U: 'upcoming', O: 'open', CT: 'closing', C: 'closed', L: 'listed' };
+        const statusClass = statusClasses[row.statusCode] || 'listed';
+        const gmpNumber = row.gmp === null || row.gmp === undefined ? null : Number(row.gmp);
+        const gmpClass = gmpNumber === null || !Number.isFinite(gmpNumber) ? '' : gmpNumber < 0 ? 'negative' : '';
+        const gmpText = gmpNumber === null || !Number.isFinite(gmpNumber) ? '—' : fmtIpoRupees(gmpNumber);
+        const gmpRange = row.gmpRange ? `<span class="ipo-gmp-range">${escapeHtml(row.gmpRange)}</span>` : '';
+        const percent = row.gmpPercent === null || row.gmpPercent === undefined ? '—' : `${fmtSigned(row.gmpPercent, 2)}%`;
+        const percentClass = row.gmpPercent === null || row.gmpPercent === undefined ? 'neutral' : moveClass(row.gmpPercent);
+        const listingInfo = row.listingPrice !== null && row.listingPrice !== undefined
+          ? `Listed ${fmtIpoRupees(row.listingPrice)}${row.listingReturnPct === null || row.listingReturnPct === undefined ? '' : ` · ${fmtSigned(row.listingReturnPct, 2)}%`}`
+          : '';
+        const detailUrl = escapeHtml(row.url || 'https://www.investorgain.com/report/ipo-gmp-live/331/');
+        const anchorText = row.anchorText || '—';
+        const anchorClass = row.anchor ? 'yes' : anchorText === '—' ? '' : 'no';
+        return `<tr>
+          <td><a class="ipo-name-link" href="${detailUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(row.name || '—')}</a><div class="ipo-name-meta"><span class="ipo-category">${escapeHtml(row.category || 'IPO')}</span><span class="ipo-stage ${statusClass}">${escapeHtml(row.status || 'Listed')}</span></div>${listingInfo ? `<span class="ipo-listing-result">${escapeHtml(listingInfo)}</span>` : ''}</td>
+          <td><span class="ipo-gmp-value ${gmpClass}">${gmpText}</span><span class="ipo-gmp-percent ${percentClass}">${percent}</span>${gmpRange}</td>
+          <td class="ipo-rating" title="${escapeHtml(row.rating || '')}">${escapeHtml(row.rating || '—')}</td>
+          <td class="ipo-subscription">${escapeHtml(row.subscription || '—')}</td>
+          <td>${escapeHtml(row.priceText || '—')}</td>
+          <td>${escapeHtml(row.issueSize || '—')}</td>
+          <td>${escapeHtml(row.lotSize || '—')}</td>
+          <td>${ipoDateMarkup(row.openDate, row.openRaw)}</td>
+          <td>${ipoDateMarkup(row.closeDate, row.closeRaw)}</td>
+          <td>${ipoDateMarkup(row.allotmentDate, row.allotmentRaw)}</td>
+          <td>${ipoDateMarkup(row.listingDate, row.listingRaw)}</td>
+          <td class="ipo-updated">${escapeHtml(row.updatedOn || '—')}</td>
+          <td class="ipo-anchor ${anchorClass}" aria-label="Anchor data ${row.anchor ? 'available' : 'not available'}">${escapeHtml(anchorText)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function refreshIPOs(manual = false) {
+      if (ipoState.busy) return;
+      ipoState.busy = true;
+      const button = document.getElementById('ipoRefreshBtn');
+      button.classList.add('is-loading');
+      button.setAttribute('aria-busy', 'true');
+      try {
+        const response = await fetch(`/api/ipos?force=${manual ? 1 : 0}&_=${Date.now()}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (Array.isArray(payload.rows) && payload.rows.length) {
+          ipoState.rows = payload.rows;
+          ipoState.summary = payload.summary || { total: payload.rows.length, upcoming: 0, open: 0, closingToday: 0, closed: 0, listed: 0 };
+        }
+        ipoState.sourceState = payload.sourceState || (payload.ok ? 'live' : 'offline');
+        ipoState.checkedAt = payload.checkedAt || new Date().toISOString();
+        ipoState.error = payload.error || '';
+        if (!response.ok && !ipoState.rows.length) ipoState.sourceState = 'offline';
+        renderIPOs();
+      } catch (error) {
+        ipoState.sourceState = ipoState.rows.length ? 'stale' : 'offline';
+        ipoState.checkedAt = ipoState.checkedAt || null;
+        ipoState.error = 'Could not connect to the local IPO data service.';
+        renderIPOs();
+      } finally {
+        ipoState.busy = false;
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+      }
+    }
+
+    function scheduleRefresh() {
+      if (state.timer) clearInterval(state.timer);
+      state.timer = null;
+      if (state.interval > 0) state.timer = setInterval(() => refreshData(false), state.interval);
+    }
+
+    function updateFilterButtons() {
+      document.querySelectorAll('[data-move-filter]').forEach(button => {
+        button.classList.toggle('active', button.dataset.moveFilter === state.moveFilter);
+      });
+      renderTable();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', event => {
+      state.query = event.target.value;
+      renderTable();
+    });
+    document.getElementById('categorySelect').addEventListener('change', event => {
+      state.category = event.target.value;
+      renderTable();
+    });
+    document.getElementById('indexChartSelect').addEventListener('change', event => {
+      state.chartIndexId = event.target.value;
+      renderIndexChart();
+    });
+    document.getElementById('intervalSelect').addEventListener('change', event => {
+      state.interval = Number(event.target.value);
+      scheduleRefresh();
+    });
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      refreshData(true);
+      refreshSilver(true);
+    });
+    document.querySelectorAll('[data-move-filter]').forEach(button => button.addEventListener('click', () => {
+      state.moveFilter = button.dataset.moveFilter;
+      updateFilterButtons();
+    }));
+    document.querySelectorAll('[data-sort]').forEach(button => button.addEventListener('click', () => {
+      const key = button.dataset.sort;
+      if (state.sortKey === key) state.sortDirection *= -1;
+      else { state.sortKey = key; state.sortDirection = key === 'name' ? 1 : -1; }
+      renderTable();
+    }));
+    document.getElementById('indicesBody').addEventListener('click', event => {
+      const button = event.target.closest('[data-favorite]');
+      if (!button) return;
+      const id = button.dataset.favorite;
+      if (state.favorites.has(id)) state.favorites.delete(id); else state.favorites.add(id);
+      saveFavorites();
+      renderTable();
+    });
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const rows = filteredRows();
+      const headers = ['Category', 'Index', 'Current', '% Change', 'Open', 'High', 'Low', 'Prev. Close', 'Prev. Day', '1W Ago', '1M Ago', '1Y Ago', '52 Week High', '52 Week Low'];
+      const data = rows.map(row => [row.category, row.name, row.last, row.changePct, row.open, row.high, row.low, row.previousClose, row.previousDayVal, row.oneWeekAgoVal, row.oneMonthAgoVal, row.oneYearAgoVal, row.yearHigh, row.yearLow]);
+      const csv = [headers, ...data].map(line => line.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `gandhi-bros-co-indices-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+    });
+    document.getElementById('etfSearch').addEventListener('input', event => {
+      etfState.query = event.target.value;
+      renderEtfs();
+    });
+    document.getElementById('etfCategorySelect').addEventListener('change', event => {
+      etfState.category = event.target.value;
+      etfState.subCategory = 'all';
+      renderEtfs();
+    });
+    document.getElementById('etfSubCategorySelect').addEventListener('change', event => {
+      etfState.subCategory = event.target.value;
+      renderEtfs();
+    });
+    document.querySelectorAll('[data-etf-move-filter]').forEach(button => button.addEventListener('click', () => {
+      etfState.moveFilter = button.dataset.etfMoveFilter;
+      renderEtfs();
+    }));
+    document.querySelectorAll('[data-etf-sort]').forEach(button => button.addEventListener('click', () => {
+      const key = button.dataset.etfSort;
+      if (etfState.sortKey === key) etfState.sortDirection *= -1;
+      else {
+        etfState.sortKey = key;
+        etfState.sortDirection = ['symbol', 'underlying', 'category', 'subCategory'].includes(key) ? 1 : -1;
+      }
+      renderEtfs();
+    }));
+    document.getElementById('etfBody').addEventListener('click', event => {
+      const button = event.target.closest('[data-etf-favorite]');
+      if (!button) return;
+      const symbol = button.dataset.etfFavorite;
+      if (etfState.favorites.has(symbol)) etfState.favorites.delete(symbol); else etfState.favorites.add(symbol);
+      saveEtfFavorites();
+      renderEtfs();
+    });
+    document.getElementById('etfRefreshBtn').addEventListener('click', () => refreshEtfs(true));
+    document.getElementById('etfExportBtn').addEventListener('click', () => {
+      const rows = etfFilteredRows();
+      const headers = ['SYMBOL', 'UNDERLYING ASSET', 'CATEGORY', 'SUB-CATEGORY', 'OPEN', 'HIGH', 'LOW', 'PREV. CLOSE', 'LTP', 'CHANGE', '% CHANGE', 'VOLUME', 'VALUE (₹ Crores)', 'i-NAV', 'NAV', '52 WEEK HIGH', '52 WEEK LOW', '30 D % CHNG'];
+      const data = rows.map(row => [row.symbol, row.underlying, row.category, row.subCategory, row.open, row.high, row.low, row.previousClose, row.ltp, row.change, row.changePct, row.volume, row.valueCrores, row.iNAV, row.nav, row.yearHigh, row.yearLow, row.change30d]);
+      const csv = [headers, ...data].map(line => line.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `gandhi-bros-co-etfs-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+    });
+    document.getElementById('ipoSearch').addEventListener('input', event => {
+      ipoState.query = event.target.value;
+      renderIPOs();
+    });
+    document.querySelectorAll('[data-ipo-filter]').forEach(button => button.addEventListener('click', () => {
+      ipoState.filter = button.dataset.ipoFilter;
+      renderIPOs();
+    }));
+    document.getElementById('ipoCategorySelect').addEventListener('change', event => {
+      ipoState.category = event.target.value;
+      renderIPOs();
+    });
+    document.querySelectorAll('[data-ipo-sort]').forEach(button => button.addEventListener('click', () => {
+      const key = button.dataset.ipoSort;
+      if (ipoState.sortKey === key) ipoState.sortDirection *= -1;
+      else {
+        ipoState.sortKey = key;
+        ipoState.sortDirection = ['name', 'openDate', 'closeDate', 'allotmentDate', 'listingDate', 'updatedOn'].includes(key) ? 1 : -1;
+      }
+      renderIPOs();
+    }));
+    document.getElementById('ipoExportBtn').addEventListener('click', () => {
+      const rows = ipoFilteredRows();
+      const headers = ['Status', 'Market segment', 'Name', 'GMP', 'GMP %', 'GMP range', 'Rating', 'Subscription', 'Price', 'IPO Size', 'Lot', 'Open', 'Close', 'BoA Dt', 'Listing', 'Updated-On', 'Anchor', 'Listing price', 'Listing return %'];
+      const data = rows.map(row => [row.status, row.category, row.name, row.gmpText, row.gmpPercent, row.gmpRange, row.rating, row.subscription, row.priceText, row.issueSize, row.lotSize, row.openRaw, row.closeRaw, row.allotmentRaw, row.listingRaw, row.updatedOn, row.anchorText, row.listingPrice, row.listingReturnPct]);
+      const csv = [headers, ...data].map(line => line.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `gandhi-bros-co-ipos-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+    });
+    document.getElementById('ipoRefreshBtn').addEventListener('click', () => refreshIPOs(true));
+
+    const DASHBOARD_PAGE_TITLES = {
+      news: 'Latest News',
+      index: 'Index Overview',
+      indices: 'NSE Indices',
+      etfs: 'ETF Market Watch',
+      ipos: 'IPO Watch',
+    };
+    function syncDashboardPage(scrollToTop = false) {
+      const aliases = { top: 'index', etfwatch: 'etfs', ipowatch: 'ipos', 'index.html': 'index' };
+      const pathKey = window.location.pathname.replace(/\/+$/, '').split('/').pop().toLowerCase() || 'index';
+      const requested = (window.location.hash || '').slice(1).toLowerCase() || pathKey;
+      const page = aliases[requested] || (Object.prototype.hasOwnProperty.call(DASHBOARD_PAGE_TITLES, requested) ? requested : 'index');
+      document.querySelectorAll('[data-page-view]').forEach(view => {
+        const active = view.dataset.pageView === page;
+        view.hidden = !active;
+        view.classList.toggle('is-active', active);
+      });
+      document.querySelectorAll('[data-page-link]').forEach(link => {
+        const active = link.dataset.pageLink === page;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      document.title = `${DASHBOARD_PAGE_TITLES[page]} | Gandhi & Bros Co.`;
+      if (scrollToTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('[data-page-link]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        if (window.location.pathname !== link.pathname || window.location.hash) {
+          window.history.pushState({}, '', link.pathname);
+        }
+        syncDashboardPage(true);
+      });
+    });
+    window.addEventListener('hashchange', () => syncDashboardPage(true));
+    window.addEventListener('popstate', () => syncDashboardPage(true));
+    syncDashboardPage(false);
+
+    scheduleRefresh();
+    refreshData();
+    refreshBenchmarks();
+    refreshSilver();
+    refreshMoneycontrolNews();
+    refreshEtfs();
+    refreshIPOs();
+    setInterval(refreshBenchmarks, 300000);
+    setInterval(refreshSilver, 10000);
+    setInterval(refreshMoneycontrolNews, 120000);
+    setInterval(() => refreshEtfs(false), 30000);
+    setInterval(() => refreshIPOs(false), 120000);
+  </script>
+</body>
+</html>
